@@ -1,10 +1,12 @@
 package com.ubibot.temperaturedata.controller;
 
 import com.ubibot.temperaturedata.model.DailyReport;
+import com.ubibot.temperaturedata.service.QueryDataThirtyMinutes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
-import com.ubibot.temperaturedata.service.QueryDataThirtyMinutes;
+
+import java.io.IOException;
 
 @RestController
 public class ubibotController {
@@ -27,7 +29,7 @@ public class ubibotController {
     }
 
     @GetMapping(value = "cronTest")
-    String testCronExpression() {
+    String testCronExpression() throws IOException {
         query.getChannelData();
         return "Called getChannelData()";
     }
