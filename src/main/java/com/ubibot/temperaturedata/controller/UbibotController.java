@@ -1,7 +1,7 @@
 package com.ubibot.temperaturedata.controller;
 
 import com.ubibot.temperaturedata.model.DailyReport;
-import com.ubibot.temperaturedata.service.QueryDataThirtyMinutes;
+import com.ubibot.temperaturedata.schedule.SensorDataThirtyMinuteIntervals;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-public class ubibotController {
+public class UbibotController {
 
     @Autowired
-    QueryDataThirtyMinutes query;
+    SensorDataThirtyMinuteIntervals query;
 
     @GetMapping(value = "ubibot/dailyReport")
     String testGetMapping(@RequestHeader HttpHeaders headers) {

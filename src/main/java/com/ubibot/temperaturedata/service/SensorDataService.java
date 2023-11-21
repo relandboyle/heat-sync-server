@@ -1,5 +1,6 @@
 package com.ubibot.temperaturedata.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ubibot.temperaturedata.UbibotConfigProperties;
 import com.ubibot.temperaturedata.model.ChannelDataFromCloud;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class ChannelQueryService {
+public class SensorDataService {
     @Autowired
     private RestTemplate restTemplate;
     @Autowired
@@ -24,27 +25,36 @@ public class ChannelQueryService {
     ObjectMapper objectMapper;
     public void getChannelDataFromCloud() throws IOException {
         String requestUrl = config.WEB_API_URL() + "channels?account_key=" + config.ACCOUNT_KEY();
-
         ChannelListFromCloud response = restTemplate.getForObject(requestUrl, ChannelListFromCloud.class);
         assert response != null;
 
+        // map the response data to a list of simplified objects
+        List<ChannelToClient> preparedData = mapChannelDataToObject(response);
+
+        // TODO: call a method to persist the prepared data to the database
+        for (var chan : preparedData) {
+            System.out.println(chan);
+        }
+    }
+
+    private List<ChannelToClient> mapChannelDataToObject(ChannelListFromCloud response) throws JsonProcessingException {
         List<ChannelDataFromCloud> requestedChannels = response.getChannels();
         List<ChannelToClient> responseChannels = new ArrayList<>();
+
+        // populate the responseChannels list
         for (int i = 0; i < requestedChannels.size(); i++) {
             ChannelDataFromCloud chan = requestedChannels.get(i);
-            Map lastValues = objectMapper.readValue(chan.getLast_values(), Map.class);
+            Map lastValues = objectMapper.readValue(chan.getLastValues(), Map.class);
             Object temperature = ((Map<String,Object>) lastValues.get("field1")).get("value");
             ChannelToClient channel = new ChannelToClient();
-            channel.setChannelId(chan.getChannel_id());
+            channel.setChannelId(chan.getChannelId());
             channel.setName(chan.getName());
-            channel.setFieldOneLabel(chan.getField1());
+            channel.setFieldOneLabel(chan.getFieldOneLabel());
             channel.setTemperature(temperature.toString());
             channel.setServerTime(response.getServer_time());
             responseChannels.add(i, channel);
         }
 
-        for (var chan : responseChannels) {
-            System.out.println(chan);
-        }
+        return responseChannels;
     }
 }

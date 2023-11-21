@@ -1,4 +1,4 @@
-package com.ubibot.temperaturedata.service;
+package com.ubibot.temperaturedata.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;

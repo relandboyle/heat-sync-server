@@ -1,30 +1,30 @@
 package com.ubibot.temperaturedata.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ChannelDataFromCloud {
-    @JsonValue
-    public String channel_id;
-    @JsonValue
-    public String field1;
+    @JsonProperty("channel_id")
+    private String channelId;
+    @JsonProperty("field1")
+    private String fieldOneLabel;
 //    @JsonValue
-//    public String latitude;
+//    private String latitude;
 //    @JsonValue
-//    public String longitude;
+//    private String longitude;
+    @JsonProperty("name")
+    private String name;
 //    @JsonValue
-    public String name;
+//    private String metadata;
 //    @JsonValue
-//    public String metadata;
+//    private String created_at;
 //    @JsonValue
-//    public String created_at;
+//    private String updated_at;
 //    @JsonValue
-//    public String updated_at;
-//    @JsonValue
-//    public String attached_at;
-    @JsonValue
-    public String last_values;
+//    private String attached_at;
+    @JsonProperty("last_values")
+    private String lastValues;
 }

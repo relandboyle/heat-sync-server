@@ -10,9 +10,9 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ChannelListFromCloud {
     @JsonValue
-    public String result;
+    private String result;
     @JsonValue
-    public String server_time;
+    private String server_time;
     @JsonValue
-    public List<ChannelDataFromCloud> channels;
+    private List<ChannelDataFromCloud> channels;
 }
