@@ -17,6 +17,6 @@ public class DailyReport {
     private String serverTime;
 
     @JsonValue
-    List<ChannelToClient> channels;
+    List<SensorDataToPersist> channels;
 
 }

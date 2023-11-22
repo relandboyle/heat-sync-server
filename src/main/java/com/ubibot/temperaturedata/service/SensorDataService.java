@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ubibot.temperaturedata.UbibotConfigProperties;
 import com.ubibot.temperaturedata.model.ChannelDataFromCloud;
 import com.ubibot.temperaturedata.model.ChannelListFromCloud;
-import com.ubibot.temperaturedata.model.ChannelToClient;
+import com.ubibot.temperaturedata.model.SensorDataToPersist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -29,7 +29,7 @@ public class SensorDataService {
         assert response != null;
 
         // map the response data to a list of simplified objects
-        List<ChannelToClient> preparedData = mapChannelDataToObject(response);
+        List<SensorDataToPersist> preparedData = mapChannelDataToObject(response);
 
         // TODO: call a method to persist the prepared data to the database
         for (var chan : preparedData) {
@@ -37,16 +37,16 @@ public class SensorDataService {
         }
     }
 
-    private List<ChannelToClient> mapChannelDataToObject(ChannelListFromCloud response) throws JsonProcessingException {
+    private List<SensorDataToPersist> mapChannelDataToObject(ChannelListFromCloud response) throws JsonProcessingException {
         List<ChannelDataFromCloud> requestedChannels = response.getChannels();
-        List<ChannelToClient> responseChannels = new ArrayList<>();
+        List<SensorDataToPersist> responseChannels = new ArrayList<>();
 
         // populate the responseChannels list
         for (int i = 0; i < requestedChannels.size(); i++) {
             ChannelDataFromCloud chan = requestedChannels.get(i);
             Map lastValues = objectMapper.readValue(chan.getLastValues(), Map.class);
             Object temperature = ((Map<String,Object>) lastValues.get("field1")).get("value");
-            ChannelToClient channel = new ChannelToClient();
+            SensorDataToPersist channel = new SensorDataToPersist();
             channel.setChannelId(chan.getChannelId());
             channel.setName(chan.getName());
             channel.setFieldOneLabel(chan.getFieldOneLabel());

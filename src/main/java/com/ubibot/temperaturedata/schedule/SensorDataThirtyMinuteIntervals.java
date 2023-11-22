@@ -12,7 +12,7 @@ public class SensorDataThirtyMinuteIntervals {
     @Autowired
     SensorDataService service;
 
-    @Scheduled(cron = "2 0/30 * * * ?")
+    @Scheduled(cron = "6 0/30 * * * ?")
     public void getChannelData() throws IOException {
         service.getChannelDataFromCloud();
     }
