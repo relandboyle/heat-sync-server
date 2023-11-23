@@ -1,11 +1,14 @@
-package com.ubibot.temperaturedata.service;
+package com.ubibot.temperaturedata.aggregator;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ubibot.temperaturedata.UbibotConfigProperties;
-import com.ubibot.temperaturedata.model.ChannelDataFromCloud;
-import com.ubibot.temperaturedata.model.ChannelListFromCloud;
-import com.ubibot.temperaturedata.model.ChannelToClient;
+import com.ubibot.temperaturedata.integrator.SensorDataIntegrator;
+import com.ubibot.temperaturedata.model.database.SensorData;
+import com.ubibot.temperaturedata.model.database.UnitData;
+import com.ubibot.temperaturedata.model.ubibot.ChannelDataFromCloud;
+import com.ubibot.temperaturedata.model.ubibot.ChannelListFromCloud;
+import com.ubibot.temperaturedata.repository.UnitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -14,39 +17,63 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
-public class SensorDataService {
+public class SensorDataAggregator {
+
     @Autowired
     private RestTemplate restTemplate;
+
     @Autowired
     UbibotConfigProperties config;
+
     @Autowired
     ObjectMapper objectMapper;
+
+    @Autowired
+    SensorDataIntegrator integrator;
+
+    @Autowired
+    UnitRepository unitRepository;
+
+    public String sensorDataManualEntry(SensorData sensorData) {
+        System.out.println("HIT AGGREGATOR");
+        String sensorName = sensorData.getName();
+        Optional<UnitData> unit = unitRepository.findById(sensorName);
+        System.out.println("UNIT: " + unit);
+        sensorData.setUnit(unit.get());
+        List<SensorData> sensorDataList = new ArrayList<>();
+        sensorDataList.add(sensorData);
+        System.out.println("LIST: " + sensorDataList);
+        return integrator.persistSensorData(sensorDataList);
+    }
+
     public void getChannelDataFromCloud() throws IOException {
         String requestUrl = config.WEB_API_URL() + "channels?account_key=" + config.ACCOUNT_KEY();
         ChannelListFromCloud response = restTemplate.getForObject(requestUrl, ChannelListFromCloud.class);
         assert response != null;
 
         // map the response data to a list of simplified objects
-        List<ChannelToClient> preparedData = mapChannelDataToObject(response);
+        List<SensorData> preparedData = mapChannelDataToSensorData(response);
 
         // TODO: call a method to persist the prepared data to the database
+
         for (var chan : preparedData) {
             System.out.println(chan);
         }
     }
 
-    private List<ChannelToClient> mapChannelDataToObject(ChannelListFromCloud response) throws JsonProcessingException {
+    private List<SensorData> mapChannelDataToSensorData(ChannelListFromCloud response) throws JsonProcessingException {
         List<ChannelDataFromCloud> requestedChannels = response.getChannels();
-        List<ChannelToClient> responseChannels = new ArrayList<>();
+        List<SensorData> responseChannels = new ArrayList<>();
 
         // populate the responseChannels list
         for (int i = 0; i < requestedChannels.size(); i++) {
             ChannelDataFromCloud chan = requestedChannels.get(i);
             Map lastValues = objectMapper.readValue(chan.getLastValues(), Map.class);
             Object temperature = ((Map<String,Object>) lastValues.get("field1")).get("value");
-            ChannelToClient channel = new ChannelToClient();
+            SensorData channel = new SensorData();
             channel.setChannelId(chan.getChannelId());
             channel.setName(chan.getName());
             channel.setFieldOneLabel(chan.getFieldOneLabel());

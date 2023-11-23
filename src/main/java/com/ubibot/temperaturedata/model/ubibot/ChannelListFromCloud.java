@@ -1,4 +1,4 @@
-package com.ubibot.temperaturedata.model;
+package com.ubibot.temperaturedata.model.ubibot;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonValue;
