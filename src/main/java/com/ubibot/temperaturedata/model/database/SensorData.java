@@ -1,18 +1,22 @@
-package com.ubibot.temperaturedata.model;
+package com.ubibot.temperaturedata.model.database;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Entity(name = "sensor_data")
+//@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SensorDataToPersist {
+@Getter
+@Setter
+public class SensorData {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @JsonProperty("sensor_id")
     private String sensorId;
 
@@ -33,5 +37,5 @@ public class SensorDataToPersist {
 
     @ManyToOne
     @JoinColumn(name = "unit_id")
-    private String unit;
+    private UnitData unit;
 }
