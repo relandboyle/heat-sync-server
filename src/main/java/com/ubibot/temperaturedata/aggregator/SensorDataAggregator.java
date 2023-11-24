@@ -51,13 +51,20 @@ public class SensorDataAggregator {
 
     public void getChannelDataFromCloud() throws IOException {
         String requestUrl = config.WEB_API_URL() + "channels?account_key=" + config.ACCOUNT_KEY();
-        ChannelListFromCloud response = restTemplate.getForObject(requestUrl, ChannelListFromCloud.class);
-        assert response != null;
+        ChannelListFromCloud channelList = restTemplate.getForObject(requestUrl, ChannelListFromCloud.class);
+        assert channelList != null;
 
         // map the response data to a list of simplified objects
-        List<SensorData> sensorDataList = mapChannelDataToSensorData(response);
+        List<SensorData> sensorDataList = mapChannelDataToSensorData(channelList);
 
-        // TODO: call a method to persist the prepared data to the database
+        // give each sensor data entry a reference to a unit based on the sensor name
+        for (SensorData sensor : sensorDataList) {
+            String sensorName = sensor.getName();
+            Optional<UnitData> unit = unitRepository.findById(sensorName);
+            sensor.setUnit(unit.get());
+        }
+
+        // call a method to persist the prepared data to the database
         integrator.persistSensorData(sensorDataList);
 
         for (var chan : sensorDataList) {
