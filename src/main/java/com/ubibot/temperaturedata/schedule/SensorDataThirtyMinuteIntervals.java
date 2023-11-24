@@ -12,7 +12,7 @@ public class SensorDataThirtyMinuteIntervals {
     @Autowired
     SensorDataAggregator service;
 
-    @Scheduled(cron = "0/10 * * * * ?")
+    @Scheduled(cron = "0 0/30 * * * ?")
     public void getChannelData() throws IOException {
         service.getChannelDataFromCloud();
     }
