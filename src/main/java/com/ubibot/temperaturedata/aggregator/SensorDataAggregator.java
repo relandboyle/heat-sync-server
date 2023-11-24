@@ -55,11 +55,12 @@ public class SensorDataAggregator {
         assert response != null;
 
         // map the response data to a list of simplified objects
-        List<SensorData> preparedData = mapChannelDataToSensorData(response);
+        List<SensorData> sensorDataList = mapChannelDataToSensorData(response);
 
         // TODO: call a method to persist the prepared data to the database
+        integrator.persistSensorData(sensorDataList);
 
-        for (var chan : preparedData) {
+        for (var chan : sensorDataList) {
             System.out.println(chan);
         }
     }

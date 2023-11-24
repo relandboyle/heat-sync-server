@@ -16,7 +16,6 @@ import lombok.Setter;
 public class SensorData {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @JsonProperty("sensor_id")
     private String sensorId;
 
