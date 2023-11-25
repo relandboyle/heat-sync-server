@@ -1,4 +1,4 @@
-package com.ubibot.temperaturedata.integrator;
+package com.ubibot.temperaturedata.service;
 
 import com.ubibot.temperaturedata.model.database.SensorData;
 import com.ubibot.temperaturedata.model.database.UnitData;
@@ -20,12 +20,8 @@ public class SensorDataIntegrator {
     UnitRepository unitRepository;
 
     public String persistSensorData(List<SensorData> channelData) {
-        System.out.println("HIT INTEGRATOR: " + channelData);
         for (SensorData channel : channelData) {
-            System.out.println("CHANNEL IN LOOP: " + channel);
             String sensorName = channel.getName();
-//            System.out.println(channel);
-//            System.out.println(sensorName);
             Optional<UnitData> unit = unitRepository.findById(sensorName);
             channel.setUnit(unit.get());
         }

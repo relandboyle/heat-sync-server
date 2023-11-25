@@ -1,9 +1,9 @@
-package com.ubibot.temperaturedata.aggregator;
+package com.ubibot.temperaturedata.domain;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ubibot.temperaturedata.UbibotConfigProperties;
-import com.ubibot.temperaturedata.integrator.SensorDataIntegrator;
+import com.ubibot.temperaturedata.service.SensorDataIntegrator;
 import com.ubibot.temperaturedata.model.database.SensorData;
 import com.ubibot.temperaturedata.model.database.UnitData;
 import com.ubibot.temperaturedata.model.ubibot.ChannelDataFromCloud;
@@ -49,7 +49,7 @@ public class SensorDataAggregator {
         return integrator.persistSensorData(sensorDataList);
     }
 
-    public void getChannelDataFromCloud() throws IOException {
+    public String getChannelDataFromCloud() throws IOException {
         String requestUrl = config.WEB_API_URL() + "channels?account_key=" + config.ACCOUNT_KEY();
         ChannelListFromCloud channelList = restTemplate.getForObject(requestUrl, ChannelListFromCloud.class);
         assert channelList != null;
@@ -65,11 +65,7 @@ public class SensorDataAggregator {
         }
 
         // call a method to persist the prepared data to the database
-        integrator.persistSensorData(sensorDataList);
-
-        for (var chan : sensorDataList) {
-            System.out.println(chan);
-        }
+        return integrator.persistSensorData(sensorDataList);
     }
 
     private List<SensorData> mapChannelDataToSensorData(ChannelListFromCloud response) throws JsonProcessingException {
