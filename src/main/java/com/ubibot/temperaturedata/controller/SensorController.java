@@ -1,6 +1,6 @@
 package com.ubibot.temperaturedata.controller;
 
-import com.ubibot.temperaturedata.aggregator.SensorDataAggregator;
+import com.ubibot.temperaturedata.domain.SensorDataAggregator;
 import com.ubibot.temperaturedata.model.database.SensorData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
