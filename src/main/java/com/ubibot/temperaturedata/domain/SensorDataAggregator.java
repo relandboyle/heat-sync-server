@@ -14,13 +14,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class SensorDataAggregator {
+
+    @Autowired
+    Properties properties;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -68,6 +68,8 @@ public class SensorDataAggregator {
         return integrator.persistSensorData(sensorDataList);
     }
 
+
+
     private List<SensorData> mapChannelDataToSensorData(ChannelListFromCloud response) throws JsonProcessingException {
         List<ChannelDataFromCloud> requestedChannels = response.getChannels();
         List<SensorData> responseChannels = new ArrayList<>();
@@ -82,10 +84,16 @@ public class SensorDataAggregator {
             channel.setName(chan.getName());
             channel.setFieldOneLabel(chan.getFieldOneLabel());
             channel.setTemperature(temperature.toString());
-            channel.setServerTime(response.getServer_time());
+            channel.setServerTime(response.getServerTime());
             responseChannels.add(i, channel);
         }
 
         return responseChannels;
+    }
+
+    public ChannelListFromCloud getCurrentChannelData(String accountKey) {
+        String webApiUrl = config.WEB_API_URL();
+        String requestUrl = webApiUrl + "channels?account_key=" + accountKey;
+        return integrator.getCurrentChannelData(requestUrl);
     }
 }

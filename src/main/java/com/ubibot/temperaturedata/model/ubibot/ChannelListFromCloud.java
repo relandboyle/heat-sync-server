@@ -1,7 +1,7 @@
 package com.ubibot.temperaturedata.model.ubibot;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.List;
@@ -9,10 +9,13 @@ import java.util.List;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ChannelListFromCloud {
-    @JsonValue
+
+    @JsonProperty("result")
     private String result;
-    @JsonValue
-    private String server_time;
-    @JsonValue
+
+    @JsonProperty("server_time")
+    private String serverTime;
+
+    @JsonProperty("channels")
     private List<ChannelDataFromCloud> channels;
 }
