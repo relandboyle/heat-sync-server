@@ -10,10 +10,10 @@ import java.io.IOException;
 @Service
 public class SensorDataThirtyMinuteIntervals {
     @Autowired
-    SensorDataAggregator service;
+    SensorDataAggregator aggregator;
 
     @Scheduled(cron = "0 0/30 * * * ?")
     public void getChannelData() throws IOException {
-        service.getChannelDataFromCloud();
+        aggregator.getChannelDataFromCloud();
     }
 }
