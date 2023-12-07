@@ -19,11 +19,20 @@ public class UnitController {
     @Autowired
     BuildingRepository buildingRepository;
 
-    @PostMapping
+    @PostMapping(value = "newUnit")
     String createNewUnit(@RequestBody UnitData newUnit, @RequestParam String buildingId) {
         Optional<BuildingData> existingBuilding = buildingRepository.findById(buildingId);
         existingBuilding.ifPresent(newUnit::setBuilding);
         unitRepository.save(newUnit);
         return "A NEW UNIT HAS BEEN CREATED";
     }
+
+    @PostMapping(value = "getUnit")
+    String getUnitData() {
+        String ID = "b3097e24-8542-4f55-a403-e5dabadfdefa";
+        System.out.println(unitRepository.findById(ID).get());
+
+        return "TEST";
+    }
+
 }

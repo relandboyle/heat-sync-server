@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity(name = "sensor_data")
-//@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

@@ -22,6 +22,7 @@ public class TemperatureDataApplication {
 		logger.debug("Debug log message");
 		logger.info("Info log message");
 		logger.error("Error log message");
+		logger.trace("Trace log message");
 	}
 
 	@Bean
