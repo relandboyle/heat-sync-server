@@ -3,19 +3,26 @@ package com.ubibot.temperaturedata.domain;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ubibot.temperaturedata.UbibotConfigProperties;
-import com.ubibot.temperaturedata.service.SensorDataIntegrator;
+import com.ubibot.temperaturedata.model.client.ClientSensorRequest;
 import com.ubibot.temperaturedata.model.database.SensorData;
 import com.ubibot.temperaturedata.model.database.UnitData;
 import com.ubibot.temperaturedata.model.ubibot.ChannelDataFromCloud;
 import com.ubibot.temperaturedata.model.ubibot.ChannelListFromCloud;
+import com.ubibot.temperaturedata.repository.BuildingRepository;
+import com.ubibot.temperaturedata.repository.SensorDataRepository;
 import com.ubibot.temperaturedata.repository.UnitRepository;
+import com.ubibot.temperaturedata.service.SensorDataIntegrator;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
+@Log4j2
 @Service
 public class SensorDataAggregator {
 
@@ -36,6 +43,35 @@ public class SensorDataAggregator {
 
     @Autowired
     UnitRepository unitRepository;
+
+    @Autowired
+    SensorDataRepository sensorDataRepository;
+
+    @Autowired
+    BuildingRepository buildingRepository;
+
+    public SensorData getFilteredChannelData(ClientSensorRequest request) {
+        System.out.println("REQUEST: " + request);
+//        List<SensorData> filteredChannelData = new ArrayList<>();
+        // if a date range is provided
+        // require a building_id OR a unit_id
+        // return all data from selected date range for selected building or unit
+
+        // if a building_id is provided
+        // return all data for all units associated with the selected building
+//        BuildingData selectedBuilding = buildingRepository.findById(request.getBuildingId()).get();
+
+
+        // if a unit_id is provided
+        // return all data for the selected unit
+//        System.out.println(request.getUnitId() != null);
+//        if (request.getUnitId() != null) {
+            return sensorDataRepository.findById("a703e0bc-7d79-4f96-8d02-4beeec525446").get();
+
+//        }
+
+//        return filteredChannelData;
+    }
 
     public String sensorDataManualEntry(SensorData sensorData) {
         System.out.println("HIT AGGREGATOR");
@@ -68,8 +104,6 @@ public class SensorDataAggregator {
         return integrator.persistSensorData(sensorDataList);
     }
 
-
-
     private List<SensorData> mapChannelDataToSensorData(ChannelListFromCloud response) throws JsonProcessingException {
         List<ChannelDataFromCloud> requestedChannels = response.getChannels();
         List<SensorData> responseChannels = new ArrayList<>();
@@ -91,9 +125,22 @@ public class SensorDataAggregator {
         return responseChannels;
     }
 
-    public ChannelListFromCloud getCurrentChannelData(String accountKey) {
+    public ChannelListFromCloud getCurrentChannelData(String accountKey) throws URISyntaxException {
         String webApiUrl = config.WEB_API_URL();
-        String requestUrl = webApiUrl + "channels?account_key=" + accountKey;
-        return integrator.getCurrentChannelData(requestUrl);
+        String requestUrl = String.valueOf(new URI( "https", webApiUrl, "/channels", "account_key=" + accountKey, null));
+        log.info("TESTING URI CONSTRUCTION: {}", requestUrl);
+
+        ChannelListFromCloud currentData = integrator.getCurrentChannelData(requestUrl);
+        List<ChannelDataFromCloud> channelList = currentData.getChannels();
+        for (var channel : channelList) {
+            channel.setTemperatureValue(extractTemperatureFromLastValues(channel.getLastValues()));
+            channel.setLastValues(null);
+        }
+        return currentData;
+    }
+
+    private String extractTemperatureFromLastValues(String lastValues) {
+        System.out.println(lastValues);
+        return "25";
     }
 }

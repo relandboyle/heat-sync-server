@@ -6,13 +6,13 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ChannelDataFromCloud {
+public class LastValues {
 
-    @JsonProperty("channel_id")
-    private String channelId;
+    @JsonProperty("log")
+    private String log;
 
     @JsonProperty("field1")
-    private String fieldOneLabel;
+    private String field1;
 
     @JsonProperty("name")
     private String name;
