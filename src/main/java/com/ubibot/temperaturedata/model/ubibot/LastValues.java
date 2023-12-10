@@ -14,12 +14,15 @@ public class LastValues {
     @JsonProperty("field1")
     private String field1;
 
-    @JsonProperty("name")
-    private String name;
+    @JsonProperty("field2")
+    private String field2;
 
-    @JsonProperty("last_values")
-    private String lastValues;
+    @JsonProperty("field3")
+    private String field3;
 
-    @JsonProperty("temperature")
-    private String temperatureValue;
+    @JsonProperty("field4")
+    private String field4;
+
+    @JsonProperty("field5")
+    private String field5;
 }

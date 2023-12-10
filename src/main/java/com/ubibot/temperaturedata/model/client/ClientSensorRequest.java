@@ -2,7 +2,10 @@ package com.ubibot.temperaturedata.model.client;
 
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
