@@ -9,33 +9,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URISyntaxException;
+import java.util.List;
 
 @RestController
 @Log4j2
 @CrossOrigin(origins = {"http://localhost:51253", "https://heat-sync.net"})
-@RequestMapping("api/v1/sensor")
+@RequestMapping(value = "api/v1/sensor", consumes = "application/json", produces = "application/json")
 public class SensorController {
 
     @Autowired
     SensorDataAggregator aggregator;
 
-    @GetMapping(value = "currentChannelData")
+    @GetMapping("/currentChannelData")
     ChannelListFromCloud getCurrentChannelData(@RequestParam String accountKey) throws URISyntaxException {
         System.out.println(accountKey);
         log.info("TESTING LOG MESSAGE");
         return aggregator.getCurrentChannelData(accountKey);
     }
 
-    @PostMapping(value = "filteredSensorData")
-    SensorData getFilteredChannelData(@RequestBody ClientSensorRequest request) {
-        System.out.println("CONTROLLER");
-        return aggregator.getFilteredChannelData(request);
+    @PostMapping("/filteredSensorData")
+    List<SensorData> getFilteredChannelData(@RequestBody ClientSensorRequest request) {
+        log.info("CONTROLLER: request: {}", request);
+        List<SensorData> response = aggregator.getFilteredChannelData(request);
+        log.info("RESPONSE SIZE: {}", response.size());
+        return response;
     }
 
-    @PostMapping(value = "newSensor")
-    String receiveChannelData(@RequestBody SensorData sensorData) {
+    @PostMapping("/newSensor")
+    String receiveChannelData(@RequestBody SensorData sensorData) throws Exception {
         System.out.println("CONTROLLER INPUTS: ");
         System.out.println(sensorData);
-        return aggregator.sensorDataManualEntry(sensorData);
+        return aggregator.manualGetSensorDataAndPersist(sensorData);
     }
 }

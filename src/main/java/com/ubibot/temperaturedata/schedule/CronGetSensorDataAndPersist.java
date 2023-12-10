@@ -5,15 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-
 @Service
-public class SensorDataThirtyMinuteIntervals {
+public class CronGetSensorDataAndPersist {
     @Autowired
     SensorDataAggregator aggregator;
 
     @Scheduled(cron = "0 0/30 * * * ?")
-    public void getChannelData() throws IOException {
-        aggregator.getChannelDataFromCloud();
+    public void getSensorDataAndPersist() throws Exception {
+        aggregator.cronGetSensorDataAndPersist();
     }
 }
