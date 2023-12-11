@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 
 @Entity(name = "sensor_data")
 @NoArgsConstructor
@@ -31,7 +32,7 @@ public class SensorData implements Serializable {
     private String name;
 
     @JsonProperty("server_time")
-    private String serverTime;
+    private ZonedDateTime serverTime;
 
     @JsonProperty("field1")
     private String fieldOneLabel;

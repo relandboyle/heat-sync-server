@@ -1,5 +1,6 @@
 package com.ubibot.temperaturedata.model.database;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,6 +40,7 @@ public class BuildingData implements Serializable {
     private String country;
 
     @OneToMany(mappedBy = "building")
+    @JsonIgnore
     @Column(name = "units")
     private List<UnitData> unitData;
 }

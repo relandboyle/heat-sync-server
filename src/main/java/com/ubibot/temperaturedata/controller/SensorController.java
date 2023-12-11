@@ -29,7 +29,7 @@ public class SensorController {
 
     @PostMapping("/filteredSensorData")
     List<SensorData> getFilteredChannelData(@RequestBody ClientSensorRequest request) {
-        log.info("CONTROLLER: request: {}", request);
+        log.info("CONTROLLER: request: {}", request.getDateRangeStart());
         List<SensorData> response = aggregator.getFilteredChannelData(request);
         log.info("RESPONSE SIZE: {}", response.size());
         return response;

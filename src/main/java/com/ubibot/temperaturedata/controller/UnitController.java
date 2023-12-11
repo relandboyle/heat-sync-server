@@ -1,36 +1,39 @@
 package com.ubibot.temperaturedata.controller;
 
-import com.ubibot.temperaturedata.model.database.BuildingData;
+import com.ubibot.temperaturedata.domain.UnitDataAggregator;
+import com.ubibot.temperaturedata.model.client.ClientUnitRequest;
 import com.ubibot.temperaturedata.model.database.UnitData;
-import com.ubibot.temperaturedata.repository.BuildingRepository;
-import com.ubibot.temperaturedata.repository.UnitRepository;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
+import java.util.List;
 
+@Log4j2
 @RestController
 @RequestMapping("api/v1/unit")
 public class UnitController {
 
     @Autowired
-    UnitRepository unitRepository;
+    UnitDataAggregator aggregator;
 
-    @Autowired
-    BuildingRepository buildingRepository;
+    @PostMapping("searchUnits")
+    public List<UnitData> searchForUnit(@RequestBody ClientUnitRequest request) {
+        log.info("SEARCH FOR UNITS: {}", request.toString());
+        return aggregator.searchForUnit(request);
+    }
 
     @PostMapping(value = "newUnit")
-    String createNewUnit(@RequestBody UnitData newUnit, @RequestParam String buildingId) {
-        Optional<BuildingData> existingBuilding = buildingRepository.findById(buildingId);
-        existingBuilding.ifPresent(newUnit::setBuilding);
-        unitRepository.save(newUnit);
-        return "A NEW UNIT HAS BEEN CREATED";
+    public String createOrUpdateUnit(@RequestBody ClientUnitRequest request) {
+        log.info("CREATE OR UPDATE UNIT: {}", request.toString());
+        return aggregator.createOrUpdateUnit(request);
     }
 
     @PostMapping(value = "getUnit")
-    String getUnitData() {
-        String ID = "b3097e24-8542-4f55-a403-e5dabadfdefa";
-        System.out.println(unitRepository.findById(ID).get());
+    public String getUnitData() {
 
         return "TEST";
     }

@@ -19,7 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 @Log4j2
@@ -55,20 +55,34 @@ public class SensorDataAggregator {
         log.info("AGGREGATOR: request: {}", request);
         List<SensorData> response = null;
 
-        // if a date range and unit_id are provided
-        // return all data from selected date range for selected unit
-        if (request.getDateRangeStart() != null && request.getDateRangeEnd() != null && request.getUnitId() == null) {
+        if (request.getUnitId() != null && request.getDateRangeStart() != null && request.getDateRangeEnd() != null) {
             try {
-                LocalDateTime dateStart = LocalDateTime.parse(request.getDateRangeStart());
-                LocalDateTime dateEnd = LocalDateTime.parse(request.getDateRangeEnd());
-                response = sensorDataRepository.findByServerTimeBetween(request.getDateRangeStart(), request.getDateRangeEnd());
+                ZonedDateTime dateStart = request.getDateRangeStart();
+                ZonedDateTime dateEnd =request.getDateRangeEnd();
+                String name = request.getUnitId();
+                log.info("DATES: \n{}, \n{}", dateStart, dateEnd);
+                response = sensorDataRepository.findByNameAndServerTimeIsBetween(name, dateStart, dateEnd);
             } catch(Exception err) {
                 log.error("An exception was thrown: {}", err.getMessage());
             }
         }
 
-        // if a unit_id is provided
-        // return all data for the selected unit
+//         if only a date range is provided
+//         return all data from selected date range
+        if (request.getDateRangeStart() != null && request.getDateRangeEnd() != null && request.getUnitId() == null) {
+            try {
+                ZonedDateTime dateStart = request.getDateRangeStart();
+                ZonedDateTime dateEnd =request.getDateRangeEnd();
+                log.info("DATES: \n{}, \n{}", dateStart, dateEnd);
+                response = sensorDataRepository.findByServerTimeBetween(dateStart, dateEnd);
+            } catch(Exception err) {
+                log.error("An exception was thrown: {}", err.getMessage());
+            }
+        }
+
+//         if only a unit_id is provided
+//         return all data for the selected unit
+        // TODO: check for redundant logic in this conditional statement
         if (request.getUnitId() != null && request.getDateRangeStart() == null || request.getDateRangeEnd() == null) {
             try {
                 assert request.getUnitId() != null;
