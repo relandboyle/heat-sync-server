@@ -51,29 +51,31 @@ public class SensorDataAggregator {
     BuildingRepository buildingRepository;
 
     // return a list of sensor data entries based on user inputs
-    public List<SensorData> getFilteredChannelData(ClientSensorRequest request) {
-        log.info("AGGREGATOR: request: {}", request);
+    public List<SensorData> getFilteredChannelData(ClientSensorRequest request) throws Exception {
+        log.info("GETFILTEREDCHANNELDATA: {}", request);
         List<SensorData> response = null;
 
+        // if a unit_id AND a date range are provided
+        // return data for only that unit, only within that date range
         if (request.getUnitId() != null && request.getDateRangeStart() != null && request.getDateRangeEnd() != null) {
             try {
                 ZonedDateTime dateStart = request.getDateRangeStart();
                 ZonedDateTime dateEnd =request.getDateRangeEnd();
                 String name = request.getUnitId();
-                log.info("DATES: \n{}, \n{}", dateStart, dateEnd);
+                log.info("NAME: {}\nDATES: {}, {}", name, dateStart, dateEnd);
                 response = sensorDataRepository.findByNameAndServerTimeIsBetween(name, dateStart, dateEnd);
             } catch(Exception err) {
                 log.error("An exception was thrown: {}", err.getMessage());
             }
         }
 
-//         if only a date range is provided
-//         return all data from selected date range
+         // if only a date range is provided
+         // return all data from within the date range
         if (request.getDateRangeStart() != null && request.getDateRangeEnd() != null && request.getUnitId() == null) {
             try {
                 ZonedDateTime dateStart = request.getDateRangeStart();
                 ZonedDateTime dateEnd =request.getDateRangeEnd();
-                log.info("DATES: \n{}, \n{}", dateStart, dateEnd);
+                log.info("DATES: {}, {}", dateStart, dateEnd);
                 response = sensorDataRepository.findByServerTimeBetween(dateStart, dateEnd);
             } catch(Exception err) {
                 log.error("An exception was thrown: {}", err.getMessage());
@@ -82,18 +84,16 @@ public class SensorDataAggregator {
 
 //         if only a unit_id is provided
 //         return all data for the selected unit
-        // TODO: check for redundant logic in this conditional statement
         if (request.getUnitId() != null && request.getDateRangeStart() == null || request.getDateRangeEnd() == null) {
             try {
-                assert request.getUnitId() != null;
-                Optional<UnitData> optUnit = unitRepository.findById(request.getUnitId());
-                UnitData unit = optUnit.orElse(new UnitData());
-                String unitId = unit.getUnitId();
-                response = sensorDataRepository.findByName(unitId);
+                String name = request.getUnitId();
+                log.info("NAME: {}", name);
+                response = sensorDataRepository.findByName(name);
             } catch(Exception err) {
                 log.error("An exception was thrown: {}", err.getMessage());
             }
         }
+
         return response;
     }
 
