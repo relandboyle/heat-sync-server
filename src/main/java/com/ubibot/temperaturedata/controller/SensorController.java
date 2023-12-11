@@ -28,7 +28,7 @@ public class SensorController {
     }
 
     @PostMapping("/filteredSensorData")
-    List<SensorData> getFilteredChannelData(@RequestBody ClientSensorRequest request) {
+    List<SensorData> getFilteredChannelData(@RequestBody ClientSensorRequest request) throws Exception {
         log.info("CONTROLLER: request: {}", request.getDateRangeStart());
         List<SensorData> response = aggregator.getFilteredChannelData(request);
         log.info("RESPONSE SIZE: {}", response.size());
