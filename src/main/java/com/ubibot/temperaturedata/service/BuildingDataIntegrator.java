@@ -21,7 +21,8 @@ public class BuildingDataIntegrator {
         String name = request.getStreetName();
         String postal = request.getPostalCode();
         log.info("NUMBER, NAME, POSTAL: \n{}\n{}\n{}", number, name, postal);
-        return buildingRepository.findByStreetNumberContainingOrStreetNameContainingOrPostalCodeContaining(number, name, postal);
+//        return buildingRepository.findByStreetNumberContainingOrStreetNameContainingOrPostalCodeContaining(number, name, postal);
+        return buildingRepository.findByFullAddressIgnoreCaseContaining(request.getFullAddress());
     }
 
     public String createBuilding(BuildingData newBuilding) {
