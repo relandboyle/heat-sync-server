@@ -39,6 +39,9 @@ public class BuildingData implements Serializable {
     @Column(name = "country")
     private String country;
 
+    @Column(name = "full_address")
+    private String fullAddress;
+
     @OneToMany(mappedBy = "building")
     @JsonIgnore
     @Column(name = "units")

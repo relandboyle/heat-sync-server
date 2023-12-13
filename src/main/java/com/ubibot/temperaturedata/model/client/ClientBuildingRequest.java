@@ -30,4 +30,7 @@ public class ClientBuildingRequest {
 
     @JsonValue
     private String postalCode;
+
+    @JsonValue
+    private String fullAddress;
 }
