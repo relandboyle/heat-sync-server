@@ -22,7 +22,9 @@ public class UnitDataIntegrator {
     BuildingRepository buildingRepository;
 
     public List<UnitData> searchForUnit(ClientUnitRequest request) {
-        return unitRepository.findByTenantNameContainingOrUnitNumberContaining(request.getTenantName(), request.getUnitNumber());
+        log.info("REQUEST: {}", request.getFullUnit());
+//        return unitRepository.findByTenantNameContainingOrUnitNumberContaining(request.getTenantName(), request.getUnitNumber());
+        return unitRepository.findByFullUnitIgnoreCaseContaining(request.getFullUnit());
     }
 
     public String createOrUpdateUnit(ClientUnitRequest request, BuildingData existingBuilding) {

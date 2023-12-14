@@ -8,4 +8,5 @@ import java.util.List;
 public interface UnitRepository extends JpaRepository<UnitData, String> {
 
     List<UnitData> findByTenantNameContainingOrUnitNumberContaining(String tenantName, String unitNumber);
+    List<UnitData> findByFullUnitIgnoreCaseContaining(String fullUnit);
 }

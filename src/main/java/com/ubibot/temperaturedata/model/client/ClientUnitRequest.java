@@ -24,4 +24,7 @@ public class ClientUnitRequest {
 
     @JsonValue
     private String buildingId;
+
+    @JsonValue
+    private String fullUnit;
 }

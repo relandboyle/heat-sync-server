@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @Log4j2
-@CrossOrigin(origins = {"http://localhost:51253", "https://heat-sync.net"})
+@CrossOrigin(origins = {"http://localhost:12345", "https://heat-sync.net"})
 @RequestMapping(value = "api/v1/sensor", consumes = "application/json", produces = "application/json")
 public class SensorController {
 
