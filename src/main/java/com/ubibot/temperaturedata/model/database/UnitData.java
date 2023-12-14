@@ -28,6 +28,9 @@ public class UnitData implements Serializable {
     @Column(name = "tenant_name")
     private String tenantName;
 
+    @Column(name = "full_unit")
+    private String fullUnit;
+
     @OneToMany(mappedBy = "unit")
     @JsonIgnore
     @Column(name = "sensors")

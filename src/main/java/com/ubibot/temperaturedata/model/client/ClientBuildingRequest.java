@@ -1,6 +1,5 @@
 package com.ubibot.temperaturedata.model.client;
 
-
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
