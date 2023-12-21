@@ -20,7 +20,8 @@ public class BuildingController {
 
     @PostMapping("searchBuildings")
     public List<BuildingData> searchForBuilding(@RequestBody ClientBuildingRequest request) {
-        System.out.println("SEARCH BUILDING REQUEST: " + request.toString());
+        log.info("Endpoint: /api/v1/building/searchBuildings, Query: {}",
+                request.getFullAddress());
         return aggregator.searchForBuilding(request);
     }
 
