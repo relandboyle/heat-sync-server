@@ -21,7 +21,9 @@ public class UnitController {
     @PostMapping("searchUnits")
     public List<UnitData> searchForUnit(@RequestBody ClientUnitRequest request) {
         log.info("SEARCH FOR UNITS: {}", request.toString());
-        return aggregator.searchForUnit(request);
+        List<UnitData> response = aggregator.searchForUnit(request);
+        log.info("UNITDATA RESPONSE: " + response.toString());
+        return response;
     }
 
     @PostMapping(value = "newUnit")

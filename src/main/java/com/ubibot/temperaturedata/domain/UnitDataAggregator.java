@@ -27,7 +27,15 @@ public class UnitDataAggregator {
     BuildingRepository buildingRepository;
 
     public List<UnitData> searchForUnit(ClientUnitRequest request) {
-        return integrator.searchForUnit(request);
+        List<UnitData> searchResult = integrator.searchForUnit(request);
+        // Update each result to remove the reference to a BuildingData object and replace with a buildingId string
+        for (UnitData result : searchResult) {
+            if (result.getBuilding() != null) {
+                result.setBuildingId(result.getBuilding().getBuildingId());
+                result.setBuilding(null);
+            }
+        }
+        return searchResult;
     }
 
     public String createOrUpdateUnit(ClientUnitRequest request) {

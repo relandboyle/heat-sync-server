@@ -31,6 +31,9 @@ public class UnitData implements Serializable {
     @Column(name = "full_unit")
     private String fullUnit;
 
+    @Column(name = "building_id")
+    private String buildingId;
+
     @OneToMany(mappedBy = "unit")
     @JsonIgnore
     @Column(name = "sensors")
@@ -38,6 +41,6 @@ public class UnitData implements Serializable {
 
     @ManyToOne
     @JsonIgnore
-    @JoinColumn(name = "building_id")
+    @JoinColumn(name = "building")
     private BuildingData building;
 }
