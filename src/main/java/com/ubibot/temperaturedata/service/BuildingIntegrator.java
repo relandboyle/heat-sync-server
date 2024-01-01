@@ -12,25 +12,22 @@ import java.util.List;
 
 @Log4j2
 @Service
-public class BuildingDataIntegrator {
+public class BuildingIntegrator {
 
     @Autowired
     BuildingRepository buildingRepository;
 
     @Cacheable(cacheNames = "BuildingCache", unless = "#result == null")
     public List<BuildingData> searchForBuilding(ClientBuildingRequest request) {
-        String number = request.getStreetNumber();
-        String name = request.getStreetName();
-        String postal = request.getPostalCode();
         log.info("Method: searchForBuilding, fullAddress: {}",
                 request.getFullAddress());
-//        return buildingRepository.findByStreetNumberContainingOrStreetNameContainingOrPostalCodeContaining(number, name, postal);
         return buildingRepository.findByFullAddressIgnoreCaseContaining(request.getFullAddress());
     }
 
     public String createBuilding(BuildingData newBuilding) {
         log.info("newBuilding object received by BuildingDataIntegrator: {}", newBuilding);
         BuildingData confirmation = buildingRepository.save(newBuilding);
-        return "New building created successfully";
+        log.info("CONFIRMATION: {}", confirmation);
+        return "New building created successfully with ID: " +  confirmation.getBuildingId();
     }
 }

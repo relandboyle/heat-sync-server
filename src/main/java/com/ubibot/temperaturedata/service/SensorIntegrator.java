@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Log4j2
 @Service
-public class SensorDataIntegrator {
+public class SensorIntegrator {
 
     @Autowired
     RestTemplate restTemplate;

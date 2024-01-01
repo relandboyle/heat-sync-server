@@ -11,7 +11,7 @@ import com.ubibot.temperaturedata.model.ubibot.ChannelListFromCloud;
 import com.ubibot.temperaturedata.repository.BuildingRepository;
 import com.ubibot.temperaturedata.repository.SensorDataRepository;
 import com.ubibot.temperaturedata.repository.UnitRepository;
-import com.ubibot.temperaturedata.service.SensorDataIntegrator;
+import com.ubibot.temperaturedata.service.SensorIntegrator;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ import java.util.*;
 
 @Log4j2
 @Service
-public class SensorDataAggregator {
+public class SensorAggregator {
 
     @Autowired
     Properties properties;
@@ -39,7 +39,7 @@ public class SensorDataAggregator {
     ObjectMapper objectMapper;
 
     @Autowired
-    SensorDataIntegrator integrator;
+    SensorIntegrator integrator;
 
     @Autowired
     UnitRepository unitRepository;

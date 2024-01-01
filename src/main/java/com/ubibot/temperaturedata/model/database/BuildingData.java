@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "building")
@@ -18,7 +19,7 @@ import java.util.List;
 public class BuildingData implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "building_id")
+    @Column(name = "id")
     private String buildingId;
 
     @Column(name = "street_number")
@@ -42,8 +43,8 @@ public class BuildingData implements Serializable {
     @Column(name = "full_address")
     private String fullAddress;
 
-    @OneToMany(mappedBy = "building")
+    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     @Column(name = "units")
-    private List<UnitData> unitData;
+    private List<UnitData> units = new ArrayList<>();
 }

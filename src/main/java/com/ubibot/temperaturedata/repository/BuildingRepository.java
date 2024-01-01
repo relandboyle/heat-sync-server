@@ -7,7 +7,5 @@ import java.util.List;
 
 public interface BuildingRepository extends JpaRepository<BuildingData, String> {
 
-    List<BuildingData> findByStreetNumberContainingOrStreetNameContainingOrPostalCodeContaining(String streetNumber, String streetName, String postalCode);
-
     List<BuildingData> findByFullAddressIgnoreCaseContaining(String fullAddress);
 }

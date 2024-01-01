@@ -1,6 +1,6 @@
 package com.ubibot.temperaturedata.controller;
 
-import com.ubibot.temperaturedata.domain.UnitDataAggregator;
+import com.ubibot.temperaturedata.domain.UnitAggregator;
 import com.ubibot.temperaturedata.model.client.ClientUnitRequest;
 import com.ubibot.temperaturedata.model.database.UnitData;
 import lombok.extern.log4j.Log4j2;
@@ -16,18 +16,17 @@ import java.util.List;
 public class UnitController {
 
     @Autowired
-    UnitDataAggregator aggregator;
+    UnitAggregator aggregator;
 
     @PostMapping("searchUnits")
     public List<UnitData> searchForUnit(@RequestBody ClientUnitRequest request) {
-        log.info("SEARCH FOR UNITS: {}", request.toString());
+        log.info("SEARCH FOR UNITS");
         List<UnitData> response = aggregator.searchForUnit(request);
-        log.info("UNITDATA RESPONSE: " + response.toString());
         return response;
     }
 
     @PostMapping(value = "newUnit")
-    public String createOrUpdateUnit(@RequestBody ClientUnitRequest request) {
+    public String createOrUpdateUnit(@RequestBody ClientUnitRequest request) throws Exception {
         log.info("CREATE OR UPDATE UNIT: {}", request.toString());
         return aggregator.createOrUpdateUnit(request);
     }
