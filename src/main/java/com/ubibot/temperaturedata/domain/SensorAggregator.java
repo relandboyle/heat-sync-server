@@ -27,28 +27,28 @@ import java.util.*;
 public class SensorAggregator {
 
     @Autowired
-    Properties properties;
+    private Properties properties;
 
     @Autowired
     private RestTemplate restTemplate;
 
     @Autowired
-    UbibotConfigProperties config;
+    private UbibotConfigProperties config;
 
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     @Autowired
-    SensorIntegrator integrator;
+    private SensorIntegrator integrator;
 
     @Autowired
-    UnitRepository unitRepository;
+    private UnitRepository unitRepository;
 
     @Autowired
-    SensorDataRepository sensorDataRepository;
+    private SensorDataRepository sensorDataRepository;
 
     @Autowired
-    BuildingRepository buildingRepository;
+    private BuildingRepository buildingRepository;
 
     // return a list of sensor data entries based on user inputs
     public List<SensorData> getFilteredChannelData(ClientSensorRequest request) throws Exception {

@@ -29,12 +29,13 @@ public class UnitAggregator {
     public List<UnitData> searchForUnit(ClientUnitRequest request) {
         List<UnitData> searchResult = integrator.searchForUnit(request);
 //      Update each result to remove the reference to a BuildingData object and replace with a buildingId string
-//        for (UnitData result : searchResult) {
+        for (UnitData result : searchResult) {
+            System.out.println("FULL UNIT: " + result.getFullUnit());
 //            if (result.getBuilding() != null) {
 //                result.setBuildingId(result.getBuilding().getBuildingId());
 //                result.setBuilding(null);
 //            }
-//        }
+        }
         return searchResult;
     }
 
@@ -49,7 +50,7 @@ public class UnitAggregator {
             newUnit.setUnitNumber(request.getUnitNumber());
             newUnit.setTenantName(request.getTenantName());
             newUnit.setFullUnit(request.getUnitNumber() + ", " + request.getTenantName());
-            newUnit.setBuilding(existingBuilding.get());
+            newUnit.setBuildingId(existingBuilding.get());
             return integrator.createOrUpdateUnit(newUnit);
         } else {
             log.error("EXISTING BUILDING NOT FOUND: {}", request.getBuildingId());

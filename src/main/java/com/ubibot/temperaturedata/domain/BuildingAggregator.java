@@ -23,7 +23,7 @@ public class BuildingAggregator {
     public String createBuilding(ClientBuildingRequest request) {
         BuildingData newBuilding = new BuildingData();
         if (request != null) {
-            newBuilding.setBuildingId(request.getBuildingId());
+            newBuilding.setId(request.getBuildingId());
             newBuilding.setStreetNumber(request.getStreetNumber());
             newBuilding.setStreetName(request.getStreetName());
             newBuilding.setCity(request.getCity());

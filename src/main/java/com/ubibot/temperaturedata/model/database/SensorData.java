@@ -1,6 +1,5 @@
 package com.ubibot.temperaturedata.model.database;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -22,8 +21,8 @@ public class SensorData implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @JsonProperty("sensor_id")
-    private String sensorId;
+    @JsonProperty("entry")
+    private String entry;
 
     @JsonProperty("channel_id")
     private String channelId;
@@ -41,7 +40,6 @@ public class SensorData implements Serializable {
     private String temperature;
 
     @ManyToOne
-    @JsonIgnore
     @JoinColumn(name = "unit_id")
     private UnitData unit;
 }

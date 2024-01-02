@@ -19,7 +19,7 @@ public class BuildingIntegrator {
 
     @Cacheable(cacheNames = "BuildingCache", unless = "#result == null")
     public List<BuildingData> searchForBuilding(ClientBuildingRequest request) {
-        log.info("Method: searchForBuilding, fullAddress: {}",
+        log.info("BUILDING INTEGRATOR - SEARCHFORBUILDING - fullAddress: {}",
                 request.getFullAddress());
         return buildingRepository.findByFullAddressIgnoreCaseContaining(request.getFullAddress());
     }
@@ -28,6 +28,6 @@ public class BuildingIntegrator {
         log.info("newBuilding object received by BuildingDataIntegrator: {}", newBuilding);
         BuildingData confirmation = buildingRepository.save(newBuilding);
         log.info("CONFIRMATION: {}", confirmation);
-        return "New building created successfully with ID: " +  confirmation.getBuildingId();
+        return "New building created successfully with ID: " +  confirmation.getId();
     }
 }

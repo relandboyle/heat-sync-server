@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.List;
 
 @Entity(name = "unit")
 @NoArgsConstructor
@@ -18,8 +17,7 @@ public class UnitData implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "unit_id")
-    private String unitId;
+    private String id;
 
     @Column(name = "unit_number")
     private String unitNumber;
@@ -30,12 +28,11 @@ public class UnitData implements Serializable {
     @Column(name = "full_unit")
     private String fullUnit;
 
-    @OneToMany(mappedBy = "unit")
-//    @JsonIgnore
-    @Column(name = "sensors")
-    private List<SensorData> sensors;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "building_id")
-    private BuildingData building;
+    private BuildingData buildingId;
+
+//    @OneToMany(mappedBy = "unit", fetch = FetchType.LAZY)
+//    @Column(name = "sensor_entries")
+//    private List<SensorData> sensorEntries;
 }

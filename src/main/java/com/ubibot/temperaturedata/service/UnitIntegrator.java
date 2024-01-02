@@ -9,7 +9,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,14 +24,11 @@ public class UnitIntegrator {
 
     public List<UnitData> searchForUnit(ClientUnitRequest request) {
         log.info("\nFULL UNIT QUERY: {}\nBUILDING ID: {}", request.getFullUnit(), request.getBuildingId());
+        // TODO: use an 'exists' query rather than get or find
         Optional<BuildingData> selectedBuilding = buildingRepository.findById(request.getBuildingId());
-        List<UnitData> unitsInBuilding = new ArrayList<>();
-        if (selectedBuilding.isPresent()) {
-            log.info(selectedBuilding.get().getFullAddress());
-            unitsInBuilding.addAll(selectedBuilding.get().getUnits());
-            log.info("UNITS IN BUILDING: {}", unitsInBuilding);
-        }
-        return unitsInBuilding;
+
+        List<UnitData> matchingUnitsInBuilding = unitRepository.findByBuildingIdContainingAndFullUnitIgnoreCaseContaining(request.getBuildingId(), request.getFullUnit());
+        return matchingUnitsInBuilding;
     }
 
     public String createOrUpdateUnit(UnitData newUnit) throws Exception {
@@ -41,7 +37,7 @@ public class UnitIntegrator {
         try {
             UnitData confirmation = unitRepository.save(newUnit);
             log.info("UNIT INTEGRATOR - SUCCESSFULLY CREATED OR UPDATED UNIT");
-            return "New unit created successfully with ID: " + confirmation.getUnitId();
+            return "New unit created successfully with ID: " + confirmation.getId();
         } catch(Exception err) {
             log.error("An exception has occurred: {}", err.getMessage());
             throw new Exception(err);
