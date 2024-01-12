@@ -1,6 +1,6 @@
 package com.ubibot.temperaturedata.controller;
 
-import com.ubibot.temperaturedata.domain.BuildingDataAggregator;
+import com.ubibot.temperaturedata.domain.BuildingAggregator;
 import com.ubibot.temperaturedata.model.client.ClientBuildingRequest;
 import com.ubibot.temperaturedata.model.database.BuildingData;
 import lombok.extern.log4j.Log4j2;
@@ -16,17 +16,17 @@ import java.util.List;
 public class BuildingController {
 
     @Autowired
-    BuildingDataAggregator aggregator;
+    BuildingAggregator aggregator;
 
     @PostMapping("searchBuildings")
-    public List<BuildingData> searchForBuilding(@RequestBody ClientBuildingRequest request) {
-        log.info("Endpoint: /api/v1/building/searchBuildings, Query: {}",
-                request.getFullAddress());
-        return aggregator.searchForBuilding(request);
+    public List<BuildingData> searchForBuilding(@RequestBody ClientBuildingRequest buildingQuery) {
+        log.info("BUILDING CONTROLLER - SEARCHFORBUILDING - Query: {}",
+                buildingQuery.getFullAddress());
+        return aggregator.searchForBuilding(buildingQuery);
     }
 
     @PostMapping("newBuilding")
-    public String createBuilding(@RequestBody BuildingData newBuilding) {
+    public String createBuilding(@RequestBody ClientBuildingRequest newBuilding) {
         log.info("CREATE BUILDING: {}", newBuilding);
         return aggregator.createBuilding(newBuilding);
     }

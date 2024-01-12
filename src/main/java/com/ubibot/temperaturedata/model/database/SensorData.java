@@ -22,8 +22,8 @@ public class SensorData implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @JsonProperty("sensor_id")
-    private String sensorId;
+    @JsonProperty("entry_id")
+    private String entryId;
 
     @JsonProperty("channel_id")
     private String channelId;
@@ -40,8 +40,8 @@ public class SensorData implements Serializable {
     @JsonProperty("temperature")
     private String temperature;
 
-    @ManyToOne
     @JsonIgnore
-    @JoinColumn(name = "unit_id")
-    private UnitData unit;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "unit_data")
+    private UnitData unitData;
 }

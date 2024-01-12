@@ -10,7 +10,7 @@ public interface SensorDataRepository extends JpaRepository<SensorData, String> 
 
     List<SensorData> findByName(String name);
 
-    List<SensorData> findByServerTimeBetween(ZonedDateTime dateStart, ZonedDateTime dateEnd);
+    List<SensorData> findByServerTimeIsBetween(ZonedDateTime dateStart, ZonedDateTime dateEnd);
 
     List<SensorData> findByNameAndServerTimeIsBetween(String name, ZonedDateTime dateStart, ZonedDateTime dateEnd);
 }

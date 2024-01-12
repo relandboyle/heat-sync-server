@@ -19,8 +19,8 @@ public class UnitData implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "unit_id")
-    private String unitId;
+    @Column(name = "id")
+    private String id;
 
     @Column(name = "unit_number")
     private String unitNumber;
@@ -31,16 +31,12 @@ public class UnitData implements Serializable {
     @Column(name = "full_unit")
     private String fullUnit;
 
-    @Column(name = "building_id")
-    private String buildingId;
-
-    @OneToMany(mappedBy = "unit")
     @JsonIgnore
-    @Column(name = "sensors")
-    private List<SensorData> sensors;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "building_data")
+    private BuildingData buildingData;
 
-    @ManyToOne
-    @JsonIgnore
-    @JoinColumn(name = "building")
-    private BuildingData building;
+    @OneToMany(mappedBy = "unitData", fetch = FetchType.LAZY)
+    @Column(name = "sensor_entries")
+    private List<SensorData> sensorEntries;
 }

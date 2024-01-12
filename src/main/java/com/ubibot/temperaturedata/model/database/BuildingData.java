@@ -1,6 +1,5 @@
 package com.ubibot.temperaturedata.model.database;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,10 +15,11 @@ import java.util.List;
 @Getter
 @Setter
 public class BuildingData implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "building_id")
-    private String buildingId;
+    @Column(name = "id")
+    private String id;
 
     @Column(name = "street_number")
     private String streetNumber;
@@ -42,8 +42,7 @@ public class BuildingData implements Serializable {
     @Column(name = "full_address")
     private String fullAddress;
 
-    @OneToMany(mappedBy = "building")
-    @JsonIgnore
+    @OneToMany(mappedBy = "buildingData", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Column(name = "units")
-    private List<UnitData> unitData;
+    private List<UnitData> units;
 }

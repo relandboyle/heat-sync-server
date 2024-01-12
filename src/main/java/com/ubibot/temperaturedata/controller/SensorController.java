@@ -1,6 +1,6 @@
 package com.ubibot.temperaturedata.controller;
 
-import com.ubibot.temperaturedata.domain.SensorDataAggregator;
+import com.ubibot.temperaturedata.domain.SensorAggregator;
 import com.ubibot.temperaturedata.model.client.ClientSensorRequest;
 import com.ubibot.temperaturedata.model.database.SensorData;
 import com.ubibot.temperaturedata.model.ubibot.ChannelListFromCloud;
@@ -18,7 +18,7 @@ import java.util.List;
 public class SensorController {
 
     @Autowired
-    SensorDataAggregator aggregator;
+    SensorAggregator aggregator;
 
     @GetMapping("/currentChannelData")
     ChannelListFromCloud getCurrentChannelData(@RequestParam String accountKey) throws URISyntaxException {
