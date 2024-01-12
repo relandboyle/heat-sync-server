@@ -31,16 +31,18 @@ public class SensorIntegrator {
             try {
                 String sensorName = channel.getName();
                 Optional<UnitData> unit = unitRepository.findById(sensorName);
-                channel.setUnit(unit.get());
+                unit.ifPresent(channel::setUnitData);
             } catch(Exception err) {
-                log.error("An exception has occurred: {}", err.getMessage(), err);
+                log.error("An exception has occurred: '{}' in persistSensorData()", err.getMessage());
+                throw new Exception(err);
             }
         }
 
         try {
             sensorDataRepository.saveAll(channelData);
         } catch(Exception err) {
-            log.error("An exception has occurred: {}", err.getMessage(), err);
+            log.error("An exception has occurred: '{}' when persisting sensor data", err.getMessage());
+            throw new Exception(err);
         }
 
         log.info("Sensor data persisted to database: {}", channelData);

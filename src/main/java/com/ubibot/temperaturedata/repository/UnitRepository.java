@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface UnitRepository extends JpaRepository<UnitData, String> {
 
-    List<UnitData> findByBuildingIdContainingAndFullUnitIgnoreCaseContaining(String buildingId, String fullUnit);
+    List<UnitData> findByFullUnitIgnoreCaseContaining(String fullUnit);
 }
 

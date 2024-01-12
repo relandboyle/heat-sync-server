@@ -13,18 +13,20 @@ import lombok.Setter;
 @Setter
 public class ClientUnitRequest {
 
-    @JsonValue
+    public ClientUnitRequest(String unitId, String tenantName, String unitNumber, String fullUnit) {
+        this.unitId = unitId;
+        this.tenantName = tenantName;
+        this.unitNumber = unitNumber;
+        this.fullUnit = fullUnit;
+    }
+
     private String unitId;
 
-    @JsonValue
     private String tenantName;
 
-    @JsonValue
     private String unitNumber;
 
-    @JsonValue
     private String buildingId;
 
-    @JsonValue
     private String fullUnit;
 }

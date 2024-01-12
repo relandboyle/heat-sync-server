@@ -2,7 +2,6 @@ package com.ubibot.temperaturedata.controller;
 
 import com.ubibot.temperaturedata.domain.UnitAggregator;
 import com.ubibot.temperaturedata.model.client.ClientUnitRequest;
-import com.ubibot.temperaturedata.model.database.UnitData;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +18,9 @@ public class UnitController {
     UnitAggregator aggregator;
 
     @PostMapping("searchUnits")
-    public List<UnitData> searchForUnit(@RequestBody ClientUnitRequest request) {
+    public List<ClientUnitRequest> searchForUnit(@RequestBody ClientUnitRequest request) {
         log.info("SEARCH FOR UNITS");
-        List<UnitData> response = aggregator.searchForUnit(request);
-        return response;
+        return aggregator.searchForUnit(request);
     }
 
     @PostMapping(value = "newUnit")

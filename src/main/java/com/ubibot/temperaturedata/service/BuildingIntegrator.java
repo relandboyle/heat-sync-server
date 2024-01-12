@@ -19,6 +19,10 @@ public class BuildingIntegrator {
 
     @Cacheable(cacheNames = "BuildingCache", unless = "#result == null")
     public List<BuildingData> searchForBuilding(ClientBuildingRequest request) {
+
+        List<BuildingData> testing = buildingRepository.findByFullAddressIgnoreCaseContaining(request.getFullAddress());
+        log.info("TESTING - UNITS: {}", testing.get(0).getUnits().toString());
+
         log.info("BUILDING INTEGRATOR - SEARCHFORBUILDING - fullAddress: {}",
                 request.getFullAddress());
         return buildingRepository.findByFullAddressIgnoreCaseContaining(request.getFullAddress());
@@ -26,8 +30,8 @@ public class BuildingIntegrator {
 
     public String createBuilding(BuildingData newBuilding) {
         log.info("newBuilding object received by BuildingDataIntegrator: {}", newBuilding);
-        BuildingData confirmation = buildingRepository.save(newBuilding);
-        log.info("CONFIRMATION: {}", confirmation);
-        return "New building created successfully with ID: " +  confirmation.getId();
+        BuildingData persistedBuilding = buildingRepository.save(newBuilding);
+        log.info("CONFIRMATION: {}", persistedBuilding);
+        return "New building created successfully with ID: " +  persistedBuilding.getId();
     }
 }

@@ -1,5 +1,6 @@
 package com.ubibot.temperaturedata.model.database;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Entity(name = "unit")
 @NoArgsConstructor
@@ -17,6 +19,7 @@ public class UnitData implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id")
     private String id;
 
     @Column(name = "unit_number")
@@ -28,11 +31,12 @@ public class UnitData implements Serializable {
     @Column(name = "full_unit")
     private String fullUnit;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "building_id")
-    private BuildingData buildingId;
+    @JoinColumn(name = "building_data")
+    private BuildingData buildingData;
 
-//    @OneToMany(mappedBy = "unit", fetch = FetchType.LAZY)
-//    @Column(name = "sensor_entries")
-//    private List<SensorData> sensorEntries;
+    @OneToMany(mappedBy = "unitData", fetch = FetchType.LAZY)
+    @Column(name = "sensor_entries")
+    private List<SensorData> sensorEntries;
 }

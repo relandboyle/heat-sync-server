@@ -18,6 +18,7 @@ public class BuildingData implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id")
     private String id;
 
     @Column(name = "street_number")
@@ -41,6 +42,7 @@ public class BuildingData implements Serializable {
     @Column(name = "full_address")
     private String fullAddress;
 
-    @OneToMany(mappedBy = "buildingId", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "buildingData", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Column(name = "units")
     private List<UnitData> units;
 }

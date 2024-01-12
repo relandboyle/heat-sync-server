@@ -26,17 +26,17 @@ public class UnitAggregator {
     @Autowired
     BuildingRepository buildingRepository;
 
-    public List<UnitData> searchForUnit(ClientUnitRequest request) {
+    public List<ClientUnitRequest> searchForUnit(ClientUnitRequest request) {
         List<UnitData> searchResult = integrator.searchForUnit(request);
-//      Update each result to remove the reference to a BuildingData object and replace with a buildingId string
-        for (UnitData result : searchResult) {
-            System.out.println("FULL UNIT: " + result.getFullUnit());
-//            if (result.getBuilding() != null) {
-//                result.setBuildingId(result.getBuilding().getBuildingId());
-//                result.setBuilding(null);
-//            }
-        }
-        return searchResult;
+        List<ClientUnitRequest> mappedResult = searchResult.stream()
+                .map(unitData -> new ClientUnitRequest(
+                        unitData.getId(),
+                        unitData.getTenantName(),
+                        unitData.getUnitNumber(),
+                        unitData.getFullUnit()))
+                .toList();
+        log.info("STREAM CHECK: {}", mappedResult.get(0).getFullUnit());
+        return mappedResult;
     }
 
     public String createOrUpdateUnit(ClientUnitRequest request) throws Exception {
@@ -50,7 +50,7 @@ public class UnitAggregator {
             newUnit.setUnitNumber(request.getUnitNumber());
             newUnit.setTenantName(request.getTenantName());
             newUnit.setFullUnit(request.getUnitNumber() + ", " + request.getTenantName());
-            newUnit.setBuildingId(existingBuilding.get());
+            newUnit.setBuildingData(existingBuilding.get());
             return integrator.createOrUpdateUnit(newUnit);
         } else {
             log.error("EXISTING BUILDING NOT FOUND: {}", request.getBuildingId());
