@@ -32,11 +32,10 @@ public class UnitData implements Serializable {
     private String fullUnit;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "building_data")
+    @ManyToOne()
     private BuildingData buildingData;
 
-    @OneToMany(mappedBy = "unitData", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "unitData", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Column(name = "sensor_entries")
     private List<SensorData> sensorEntries;
 }

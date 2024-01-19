@@ -41,7 +41,6 @@ public class SensorData implements Serializable {
     private String temperature;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "unit_data")
+    @ManyToOne()
     private UnitData unitData;
 }
