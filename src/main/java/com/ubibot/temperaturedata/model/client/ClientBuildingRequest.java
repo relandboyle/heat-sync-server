@@ -13,7 +13,7 @@ import lombok.Setter;
 public class ClientBuildingRequest {
 
     @JsonValue
-    private String buildingId;
+    private String id;
 
     @JsonValue
     private String streetNumber;

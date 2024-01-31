@@ -16,14 +16,27 @@ public class BuildingAggregator {
     @Autowired
     BuildingIntegrator integrator;
 
-    public List<BuildingData> searchForBuilding(ClientBuildingRequest request) {
-        return integrator.searchForBuilding(request);
+    public List<ClientBuildingRequest> searchForBuilding(ClientBuildingRequest request) {
+        List<BuildingData> searchResult = integrator.searchForBuilding(request);
+        List<ClientBuildingRequest> mappedResult = searchResult.stream()
+                .map(buildingData -> new ClientBuildingRequest(
+                        buildingData.getId(),
+                        buildingData.getStreetNumber(),
+                        buildingData.getStreetName(),
+                        buildingData.getCity(),
+                        buildingData.getState(),
+                        buildingData.getCountry(),
+                        buildingData.getPostalCode(),
+                        buildingData.getFullAddress()))
+                .toList();
+        log.info("STREAM CHECK: {}", mappedResult.get(0).getFullAddress());
+        return mappedResult;
     }
 
     public String createBuilding(ClientBuildingRequest request) {
         BuildingData newBuilding = new BuildingData();
         if (request != null) {
-            newBuilding.setId(request.getBuildingId());
+            newBuilding.setId(request.getId());
             newBuilding.setStreetNumber(request.getStreetNumber());
             newBuilding.setStreetName(request.getStreetName());
             newBuilding.setCity(request.getCity());

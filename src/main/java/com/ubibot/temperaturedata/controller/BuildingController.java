@@ -19,7 +19,7 @@ public class BuildingController {
     BuildingAggregator aggregator;
 
     @PostMapping("searchBuildings")
-    public List<BuildingData> searchForBuilding(@RequestBody ClientBuildingRequest buildingQuery) {
+    public List<ClientBuildingRequest> searchForBuilding(@RequestBody ClientBuildingRequest buildingQuery) {
         log.info("BUILDING CONTROLLER - SEARCHFORBUILDING - Query: {}",
                 buildingQuery.getFullAddress());
         return aggregator.searchForBuilding(buildingQuery);
