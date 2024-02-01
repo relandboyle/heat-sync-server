@@ -29,7 +29,7 @@ public class BuildingAggregator {
                         buildingData.getPostalCode(),
                         buildingData.getFullAddress()))
                 .toList();
-        log.info("STREAM CHECK: {}", mappedResult.get(0).getFullAddress());
+        log.info("BUILDING AGGREGATOR: STREAM CHECK: {}", mappedResult.get(0).getFullAddress());
         return mappedResult;
     }
 

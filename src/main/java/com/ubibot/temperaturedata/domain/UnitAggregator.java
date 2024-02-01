@@ -33,6 +33,7 @@ public class UnitAggregator {
                         unitData.getId(),
                         unitData.getTenantName(),
                         unitData.getUnitNumber(),
+//                        unitData.getBuildingData(),
                         unitData.getFullUnit()))
                 .toList();
         log.info("STREAM CHECK: {}", mappedResult.get(0).getFullUnit());
@@ -43,7 +44,7 @@ public class UnitAggregator {
         // should pass a UnitData object to Integrator which includes the buildingId and fullUnit
         log.info("AGGREGATOR - CREATE OR UPDATE UNIT");
         // get a reference to the existing building in the database
-        Optional<BuildingData> existingBuilding = buildingRepository.findById(request.getBuildingId());
+        Optional<BuildingData> existingBuilding = buildingRepository.findById(request.getBuildingId().getId());
 
         UnitData newUnit = new UnitData();
         if (existingBuilding.isPresent()) {
