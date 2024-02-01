@@ -43,6 +43,6 @@ public class BuildingData implements Serializable {
     private String fullAddress;
 
     @OneToMany(mappedBy = "buildingData", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Column(name = "units")
+//    @Column(name = "units")
     private List<UnitData> units;
 }

@@ -2,7 +2,6 @@ package com.ubibot.temperaturedata.controller;
 
 import com.ubibot.temperaturedata.domain.BuildingAggregator;
 import com.ubibot.temperaturedata.model.client.ClientBuildingRequest;
-import com.ubibot.temperaturedata.model.database.BuildingData;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,9 +19,11 @@ public class BuildingController {
 
     @PostMapping("searchBuildings")
     public List<ClientBuildingRequest> searchForBuilding(@RequestBody ClientBuildingRequest buildingQuery) {
-        log.info("BUILDING CONTROLLER - SEARCHFORBUILDING - Query: {}",
+        log.info("BUILDING CONTROLLER - SEARCH FOR BUILDING - Query: {}",
                 buildingQuery.getFullAddress());
-        return aggregator.searchForBuilding(buildingQuery);
+        List<ClientBuildingRequest> response = aggregator.searchForBuilding(buildingQuery);
+        log.info("RESPONSE TO BUILDING REQUEST: {}", response.get(0).getFullAddress());
+        return response;
     }
 
     @PostMapping("newBuilding")

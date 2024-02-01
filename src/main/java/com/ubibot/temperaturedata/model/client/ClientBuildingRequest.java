@@ -12,27 +12,19 @@ import lombok.Setter;
 @Setter
 public class ClientBuildingRequest {
 
-    @JsonValue
     private String id;
 
-    @JsonValue
     private String streetNumber;
 
-    @JsonValue
     private String streetName;
 
-    @JsonValue
     private String city;
 
-    @JsonValue
     private String state;
 
-    @JsonValue
     private String postalCode;
 
-    @JsonValue
     private String country;
 
-    @JsonValue
     private String fullAddress;
 }
