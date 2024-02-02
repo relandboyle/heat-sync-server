@@ -40,8 +40,4 @@ public class BuildingData implements Serializable {
 
     @Column(name = "full_address")
     private String fullAddress;
-
-//    @OneToMany(mappedBy = "buildingData", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @Column(name = "units")
-//    private List<UnitData> units;
 }

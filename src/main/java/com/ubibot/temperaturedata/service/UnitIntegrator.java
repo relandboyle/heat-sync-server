@@ -8,7 +8,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
@@ -22,13 +21,8 @@ public class UnitIntegrator {
     BuildingRepository buildingRepository;
 
     public List<UnitData> searchForUnit(ClientUnitRequest request) {
-        List<UnitData> unitSearchResults = new ArrayList<>();
-//        Optional<BuildingData> selectedBuilding = buildingRepository.findById(request.getBuildingId());
-//        if (selectedBuilding.isPresent()) {
-//            log.info("selectedBuilding is PRESENT");
-            unitSearchResults = unitRepository.findByFullUnitIgnoreCaseContaining(request.getFullUnit());
-            log.info("unitSearchResults: {}", unitSearchResults.get(0).getFullUnit());
-//        }
+        List<UnitData> unitSearchResults = unitRepository.findByFullUnitIgnoreCaseContaining(request.getFullUnit());
+        log.info("unitSearchResults: FULL UNIT: {}", unitSearchResults.get(0).getFullUnit());
         return unitSearchResults;
     }
 
@@ -39,7 +33,7 @@ public class UnitIntegrator {
             UnitData persistedUnit = unitRepository.save(newUnit);
             log.info("UNIT INTEGRATOR - SUCCESSFULLY CREATED OR UPDATED UNIT");
             return "New unit created successfully with ID: " + persistedUnit.getId();
-        } catch(Exception err) {
+        } catch (Exception err) {
             log.error("An exception has occurred: {}", err.getMessage());
             throw new Exception(err);
         }
