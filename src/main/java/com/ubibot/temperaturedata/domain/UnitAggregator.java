@@ -38,7 +38,7 @@ public class UnitAggregator {
                         unitData.getBuildingId(),
                         unitData.getFullUnit()))
                 .toList();
-        log.info("STREAM CHECK: {}", mappedResult.get(0).getFullUnit());
+//        log.info("STREAM CHECK: {}", mappedResult.get(0).getFullUnit());
         return mappedResult;
     }
 
