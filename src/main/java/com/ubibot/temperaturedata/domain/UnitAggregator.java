@@ -27,13 +27,15 @@ public class UnitAggregator {
     BuildingRepository buildingRepository;
 
     public List<ClientUnitRequest> searchForUnit(ClientUnitRequest request) {
+        // unit data returned from the database query
         List<UnitData> searchResult = integrator.searchForUnit(request);
+        // map from UnitData to ClientUnitRequest - is this still valid?
         List<ClientUnitRequest> mappedResult = searchResult.stream()
                 .map(unitData -> new ClientUnitRequest(
                         unitData.getId(),
                         unitData.getTenantName(),
                         unitData.getUnitNumber(),
-//                        unitData.getBuildingData(),
+                        unitData.getBuildingId(),
                         unitData.getFullUnit()))
                 .toList();
         log.info("STREAM CHECK: {}", mappedResult.get(0).getFullUnit());
@@ -44,7 +46,7 @@ public class UnitAggregator {
         // should pass a UnitData object to Integrator which includes the buildingId and fullUnit
         log.info("AGGREGATOR - CREATE OR UPDATE UNIT");
         // get a reference to the existing building in the database
-        Optional<BuildingData> existingBuilding = buildingRepository.findById(request.getBuildingId().getId());
+        Optional<BuildingData> existingBuilding = buildingRepository.findById(request.getBuildingId());
 
         UnitData newUnit = new UnitData();
         if (existingBuilding.isPresent()) {

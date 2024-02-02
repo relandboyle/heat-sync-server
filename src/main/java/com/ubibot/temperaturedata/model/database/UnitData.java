@@ -30,9 +30,12 @@ public class UnitData implements Serializable {
     @Column(name = "full_unit")
     private String fullUnit;
 
-    @ManyToOne()
-    @JoinColumn(name = "building_data", foreignKey = @ForeignKey(name = "unit_building"))
+    @JoinColumn(name = "building_id", insertable = false, updatable = false)
+    @ManyToOne(targetEntity = BuildingData.class, fetch = FetchType.LAZY)
     private BuildingData buildingData;
+
+    @Column(name = "building_id")
+    private String buildingId;
 
     @OneToMany(mappedBy = "unitData", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Column(name = "sensor_entries")

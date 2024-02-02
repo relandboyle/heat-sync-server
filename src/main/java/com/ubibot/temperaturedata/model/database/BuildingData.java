@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.List;
 
 @Entity(name = "building")
 @NoArgsConstructor
@@ -42,7 +41,7 @@ public class BuildingData implements Serializable {
     @Column(name = "full_address")
     private String fullAddress;
 
-    @OneToMany(mappedBy = "buildingData", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    @OneToMany(mappedBy = "buildingData", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 //    @Column(name = "units")
-    private List<UnitData> units;
+//    private List<UnitData> units;
 }
