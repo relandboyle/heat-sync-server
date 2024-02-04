@@ -25,8 +25,16 @@ public class SensorIntegrator {
     @Autowired
     UnitRepository unitRepository;
 
-    public List<SensorData> getFilteredChannelData(String channelId, ZonedDateTime dateStart, ZonedDateTime dateEnd) {
-        return sensorDataRepository.findByChannelIdAndServerTimeIsBetweenOrderByCreatedAtAsc(channelId, dateStart, dateEnd);
+    public List<SensorData> getFilteredChannelDataByIdAndDateRange(String channelId, ZonedDateTime dateStart, ZonedDateTime dateEnd) {
+        return sensorDataRepository.findByChannelIdAndServerTimeIsBetweenOrderByServerTimeAsc(channelId, dateStart, dateEnd);
+    }
+
+    public List<SensorData> getFilteredChannelDataById(String channelId) {
+        return sensorDataRepository.findByChannelIdOrderByServerTimeDesc(channelId);
+    }
+
+    public List<SensorData> getFilteredChannelDataByDateRange(ZonedDateTime dateStart, ZonedDateTime dateEnd) {
+        return sensorDataRepository.findByServerTimeIsBetweenOrderByServerTimeDesc(dateStart, dateEnd);
     }
 
     public void persistSensorData(List<SensorData> channelData) throws Exception {
