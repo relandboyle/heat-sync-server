@@ -1,7 +1,6 @@
 package com.ubibot.temperaturedata.service;
 
 import com.ubibot.temperaturedata.model.database.SensorData;
-import com.ubibot.temperaturedata.model.database.UnitData;
 import com.ubibot.temperaturedata.model.ubibot.ChannelListFromCloud;
 import com.ubibot.temperaturedata.repository.SensorDataRepository;
 import com.ubibot.temperaturedata.repository.UnitRepository;
@@ -10,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Log4j2
 @Service
@@ -26,18 +25,11 @@ public class SensorIntegrator {
     @Autowired
     UnitRepository unitRepository;
 
-    public void persistSensorData(List<SensorData> channelData) throws Exception {
-        for (SensorData channel : channelData) {
-            try {
-                String sensorName = channel.getName();
-                Optional<UnitData> unit = unitRepository.findById(sensorName);
-                unit.ifPresent(channel::setUnitData);
-            } catch(Exception err) {
-                log.error("An exception has occurred: '{}' in persistSensorData()", err.getMessage());
-                throw new Exception(err);
-            }
-        }
+    public List<SensorData> getFilteredChannelData(String channelId, ZonedDateTime dateStart, ZonedDateTime dateEnd) {
+        return sensorDataRepository.findByChannelIdAndServerTimeIsBetweenOrderByCreatedAtAsc(channelId, dateStart, dateEnd);
+    }
 
+    public void persistSensorData(List<SensorData> channelData) throws Exception {
         try {
             sensorDataRepository.saveAll(channelData);
         } catch(Exception err) {

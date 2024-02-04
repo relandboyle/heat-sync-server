@@ -1,9 +1,11 @@
 package com.ubibot.temperaturedata.model.database;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,7 +42,15 @@ public class SensorData implements Serializable {
     @JsonProperty("temperature")
     private String temperature;
 
-    @JsonIgnore
-    @ManyToOne()
-    private UnitData unitData;
+    @JsonProperty("created_at")
+    private ZonedDateTime createdAt;
+
+    @JsonProperty("latitude")
+    private String latitude;
+
+    @JsonProperty("longitude")
+    private String longitude;
+
+    @JsonProperty("outside_temperature")
+    private String outsideTemperature;
 }
