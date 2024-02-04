@@ -1,6 +1,7 @@
 package com.ubibot.temperaturedata.model.client;
 
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,11 @@ public class ClientUnitRequest {
         this.fullUnit = fullUnit;
     }
 
+    public ClientUnitRequest(String buildingId, String fullUnit) {
+        this.buildingId = buildingId;
+        this.fullUnit = fullUnit;
+    }
+
     private String unitId;
 
     private String tenantName;
@@ -28,4 +34,6 @@ public class ClientUnitRequest {
     private String buildingId;
 
     private String fullUnit;
+
+    private String channelId;
 }

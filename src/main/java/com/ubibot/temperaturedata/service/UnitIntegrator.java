@@ -21,7 +21,9 @@ public class UnitIntegrator {
     BuildingRepository buildingRepository;
 
     public List<UnitData> searchForUnit(ClientUnitRequest request) {
-        List<UnitData> unitSearchResults = unitRepository.findByFullUnitIgnoreCaseContaining(request.getFullUnit());
+        String buildingId = request.getBuildingId();
+        String fullUnit = request.getFullUnit();
+        List<UnitData> unitSearchResults = unitRepository.findByBuildingIdAndFullUnitIgnoreCaseContaining(buildingId, fullUnit);
         log.info("unitSearchResults: FULL UNIT: {}", unitSearchResults.get(0).getFullUnit());
         return unitSearchResults;
     }
