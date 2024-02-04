@@ -5,9 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ubibot.temperaturedata.UbibotConfigProperties;
 import com.ubibot.temperaturedata.model.client.ClientSensorRequest;
 import com.ubibot.temperaturedata.model.database.SensorData;
-import com.ubibot.temperaturedata.model.database.UnitData;
 import com.ubibot.temperaturedata.model.ubibot.ChannelDataFromCloud;
 import com.ubibot.temperaturedata.model.ubibot.ChannelListFromCloud;
+import com.ubibot.temperaturedata.model.weather.ForecastResponsePeriod;
+import com.ubibot.temperaturedata.model.weather.NWSForecastResponse;
+import com.ubibot.temperaturedata.model.weather.WeatherResponseProperties;
+import com.ubibot.temperaturedata.model.weather.NWSGridResponse;
 import com.ubibot.temperaturedata.repository.BuildingRepository;
 import com.ubibot.temperaturedata.repository.SensorDataRepository;
 import com.ubibot.temperaturedata.repository.UnitRepository;
@@ -20,7 +23,10 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Properties;
 
 @Log4j2
 @Service
@@ -52,18 +58,18 @@ public class SensorAggregator {
 
     // return a list of sensor data entries based on user inputs
     public List<SensorData> getFilteredChannelData(ClientSensorRequest request) throws Exception {
-        log.info("GETFILTEREDCHANNELDATA: {}", request);
+        log.info("GET FILTERED CHANNEL DATA: {}", request);
         List<SensorData> response = null;
 
         // if a unit_id AND a date range are provided
         // return data for only that unit, only within that date range
-        if (request.getUnitId() != null && request.getDateRangeStart() != null && request.getDateRangeEnd() != null) {
+        if (request.getChannelId() != null && request.getDateRangeStart() != null && request.getDateRangeEnd() != null) {
             try {
                 ZonedDateTime dateStart = request.getDateRangeStart();
                 ZonedDateTime dateEnd =request.getDateRangeEnd();
-                String name = request.getUnitId();
-                log.info("NAME: {}\nDATES: {}, {}", name, dateStart, dateEnd);
-                response = sensorDataRepository.findByNameAndServerTimeIsBetween(name, dateStart, dateEnd);
+                String channelId = request.getChannelId();
+                log.info("NAME: {}\nDATES: {}, {}", channelId, dateStart, dateEnd);
+                response = integrator.getFilteredChannelData(channelId, dateStart, dateEnd);
             } catch(Exception err) {
                 log.error("An exception was thrown: {}", err.getMessage());
             }
@@ -71,7 +77,7 @@ public class SensorAggregator {
 
          // if only a date range is provided
          // return all data from within the date range
-        if (request.getDateRangeStart() != null && request.getDateRangeEnd() != null && request.getUnitId() == null) {
+        if (request.getDateRangeStart() != null && request.getDateRangeEnd() != null && request.getChannelId() == null) {
             try {
                 ZonedDateTime dateStart = request.getDateRangeStart();
                 ZonedDateTime dateEnd =request.getDateRangeEnd();
@@ -99,10 +105,6 @@ public class SensorAggregator {
 
     public String manualGetSensorDataAndPersist(SensorData sensorData) throws Exception {
         System.out.println("HIT AGGREGATOR");
-        String sensorName = sensorData.getName();
-        Optional<UnitData> unit = unitRepository.findById(sensorName);
-        System.out.println("UNIT: " + unit);
-        sensorData.setUnitData(unit.get());
         List<SensorData> sensorDataList = new ArrayList<>();
         sensorDataList.add(sensorData);
         System.out.println("LIST: " + sensorDataList);
@@ -110,6 +112,7 @@ public class SensorAggregator {
             integrator.persistSensorData(sensorDataList);
         } catch(Exception err) {
             log.error("An exception has occurred: {}", err.getMessage(), err);
+            throw new Exception(err);
         }
         return "Sensor data has been persisted to the database.";
     }
@@ -119,54 +122,63 @@ public class SensorAggregator {
         String webApiUrl = config.WEB_API_URL();
         String accountKey = config.ACCOUNT_KEY();
         try {
-            requestUrl = String.valueOf(new URI( "https", webApiUrl, "/channels", "account_key=" + accountKey, null));
+            requestUrl = String.valueOf(
+                    new URI("https", webApiUrl, "/channels", "account_key=" + accountKey, null));
         } catch(URISyntaxException err) {
-            log.error("An exception has occurred: {}", err.getMessage(), err);
+            log.error("An exception has occurred: {}", err.getMessage());
+            throw new Exception(err);
         }
 
         // get the current data from all sensors on the account
-        ChannelListFromCloud channelList = restTemplate.getForObject(requestUrl, ChannelListFromCloud.class);
+        ChannelListFromCloud channelList;
+        try {
+            channelList = restTemplate.getForObject(requestUrl, ChannelListFromCloud.class);
+        } catch(Exception err) {
+            log.error("An exception has occurred: {}", err.getMessage());
+            throw new Exception(err);
+        }
 
         // map the response data to a list of simplified objects
         List<SensorData> sensorDataList = new ArrayList<>();
         try {
             sensorDataList = channelList != null ? mapChannelDataToSensorData(channelList) : null;
             assert sensorDataList != null;
-            // give each sensor data entry a reference to an existing unit based on the sensor name
-            for (SensorData sensor : sensorDataList) {
-                String sensorName = sensor.getName();
-                Optional<UnitData> unit = unitRepository.findById(sensorName);
-                unit.ifPresent(sensor::setUnitData);
-            }
         } catch(JsonProcessingException err) {
             log.error("An exception has occurred: {}", err.getMessage(), err);
         }
 
+        // get the outside air temperature for each entry
+        List<SensorData> sensorDataListWithOutsideAirTemps = setOutsideAirTemperature(sensorDataList);
+
         // call a method to persist the prepared data to the database
-        integrator.persistSensorData(sensorDataList);
+        integrator.persistSensorData(sensorDataListWithOutsideAirTemps);
     }
 
     private List<SensorData> mapChannelDataToSensorData(ChannelListFromCloud response) throws JsonProcessingException {
-        // extract the list of sensor last values from response object
-        List<ChannelDataFromCloud> requestedChannels = response.getChannels();
         // create a new list of SensorData to return
         List<SensorData> responseChannels = new ArrayList<>();
 
         // populate the responseChannels list
         // iterate over the list of sensor last values
         for (ChannelDataFromCloud chan : response.getChannels()) {
+            System.out.println(System.currentTimeMillis());
 
-            HashMap lastValues = objectMapper.readValue(chan.getLastValues(), HashMap.class);
-            Object temperature = ((HashMap<String, Object>) lastValues.get("field1")).get("value");
+            HashMap<?, ?> lastValues = objectMapper.readValue(chan.getLastValues(), HashMap.class);
+            Object temperature = ((HashMap<?, ?>) lastValues.get("field1")).get("value");
+            Object createdAt = ((HashMap<?, ?>) lastValues.get("field1")).get("created_at");
+            log.info("CREATED AT: {} \n {}", createdAt, ZonedDateTime.parse(createdAt.toString()));
+
             SensorData channel = new SensorData();
             channel.setChannelId(chan.getChannelId());
             channel.setName(chan.getName());
             channel.setFieldOneLabel(chan.getFieldOneLabel());
             channel.setTemperature(temperature.toString());
+            channel.setCreatedAt(ZonedDateTime.parse(createdAt.toString()));
+            channel.setLatitude(chan.getLatitude());
+            channel.setLongitude(chan.getLongitude());
             channel.setServerTime(response.getServerTime());
             responseChannels.add(0, channel);
         }
-
         return responseChannels;
     }
 
@@ -191,4 +203,65 @@ public class SensorAggregator {
 
         return "25";
     }
+
+    private List<SensorData> setOutsideAirTemperature(List<SensorData> sensorDataList) throws Exception {
+        for (SensorData entry : sensorDataList) {
+            String latitude = entry.getLatitude();
+            String longitude = entry.getLongitude();
+            WeatherResponseProperties gridInfo = new WeatherResponseProperties();
+            try {
+                gridInfo = getNWSGridInfo(latitude, longitude);
+            } catch (Exception err) {
+                log.error("An exception has occurred: {}", err.getMessage());
+                throw new Exception(err);
+            }
+            ForecastResponsePeriod forecast = new ForecastResponsePeriod();
+            try {
+                assert gridInfo != null;
+                String gridId = gridInfo.getGridId();
+                String gridX = gridInfo.getGridX();
+                String gridY = gridInfo.getGridY();
+                forecast = getNWSForecastInfo(gridId, gridX, gridY);
+            } catch(Exception err) {
+                log.error("An exception has occurred: {}", err.getMessage());
+                throw new Exception(err);
+            }
+            double tempF = forecast.getTemperature();
+            String tempC = convertFahrenheitToCelsius(tempF);
+            entry.setOutsideTemperature(tempC);
+        }
+
+        return sensorDataList;
+    }
+
+    private WeatherResponseProperties getNWSGridInfo(String latitude, String longitude) throws Exception {
+        String requestUrl = String.valueOf(new URI("https", "api.weather.gov", "/points/" + latitude + "," + longitude, null));
+        log.info("REQUEST URL: {}", requestUrl);
+        NWSGridResponse currentWeather = new NWSGridResponse();
+        try {
+            currentWeather = restTemplate.getForObject(requestUrl, NWSGridResponse.class);
+        } catch (Exception err) {
+            log.error("An exception has occurred: {}", err.getMessage());
+            throw new Exception(err);
+        }
+        return currentWeather != null ? currentWeather.getProperties() : null;
+    }
+
+    private ForecastResponsePeriod getNWSForecastInfo(String gridId, String gridX, String gridY) throws Exception {
+        String requestUrl = String.valueOf(new URI("https", "api.weather.gov","/gridpoints/" + gridId + "/" + gridX + "," + gridY + "/forecast", null));
+        log.info("REQUEST URL: {}", requestUrl);
+        NWSForecastResponse weatherForecast = new NWSForecastResponse();
+        try {
+            weatherForecast = restTemplate.getForObject(requestUrl, NWSForecastResponse.class);
+        } catch (Exception err) {
+            log.error("An exception has occurred: {}", err.getMessage());
+            throw new Exception(err);
+        }
+        return weatherForecast != null ? weatherForecast.getProperties().getPeriods().get(0) : null;
+    }
+    private String convertFahrenheitToCelsius(double tempF) {
+        double tempC = (tempF - 32) * 5 / 9;
+        return String.format("%.2f", tempC);
+    }
+
 }

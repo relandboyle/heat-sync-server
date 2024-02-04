@@ -4,6 +4,7 @@ import com.ubibot.temperaturedata.domain.BuildingAggregator;
 import com.ubibot.temperaturedata.model.client.ClientBuildingRequest;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class BuildingController {
     BuildingAggregator aggregator;
 
     @PostMapping("searchBuildings")
+    @Cacheable(cacheNames = "BuildingCache", unless = "#result == null")
     public List<ClientBuildingRequest> searchForBuilding(@RequestBody ClientBuildingRequest buildingQuery) {
         log.info("BUILDING CONTROLLER - SEARCH FOR BUILDING - Query: {}",
                 buildingQuery.getFullAddress());

@@ -26,4 +26,7 @@ public class ClientSensorRequest {
 
     @JsonValue
     private String unitId;
+
+    @JsonValue
+    private String channelId;
 }
