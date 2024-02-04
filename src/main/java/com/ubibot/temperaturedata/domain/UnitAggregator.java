@@ -29,6 +29,7 @@ public class UnitAggregator {
     public List<ClientUnitRequest> searchForUnit(ClientUnitRequest request) {
         // unit data returned from the database query
         List<UnitData> searchResult = integrator.searchForUnit(request);
+
         // map from UnitData to ClientUnitRequest - is this still valid?
         List<ClientUnitRequest> mappedResult = searchResult.stream()
                 .map(unitData -> new ClientUnitRequest(
@@ -36,9 +37,9 @@ public class UnitAggregator {
                         unitData.getTenantName(),
                         unitData.getUnitNumber(),
                         unitData.getBuildingId(),
-                        unitData.getFullUnit()))
-                .toList();
-//        log.info("STREAM CHECK: {}", mappedResult.get(0).getFullUnit());
+                        unitData.getFullUnit(),
+                        unitData.getChannelId())).toList();
+        log.info("STREAM CHECK: {}", mappedResult.get(0).getFullUnit());
         return mappedResult;
     }
 
