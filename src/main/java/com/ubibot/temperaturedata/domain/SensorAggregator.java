@@ -61,7 +61,7 @@ public class SensorAggregator {
         log.info("GET FILTERED CHANNEL DATA: {}", request);
         List<SensorData> response = null;
 
-        // if a unit_id AND a date range are provided
+        // if a channelId AND a date range are provided
         // return data for only that unit, only within that date range
         if (request.getChannelId() != null && request.getDateRangeStart() != null && request.getDateRangeEnd() != null) {
             try {
@@ -69,7 +69,7 @@ public class SensorAggregator {
                 ZonedDateTime dateEnd =request.getDateRangeEnd();
                 String channelId = request.getChannelId();
                 log.info("NAME: {}\nDATES: {}, {}", channelId, dateStart, dateEnd);
-                response = integrator.getFilteredChannelData(channelId, dateStart, dateEnd);
+                response = integrator.getFilteredChannelDataByIdAndDateRange(channelId, dateStart, dateEnd);
             } catch(Exception err) {
                 log.error("An exception was thrown: {}", err.getMessage());
             }
@@ -82,19 +82,19 @@ public class SensorAggregator {
                 ZonedDateTime dateStart = request.getDateRangeStart();
                 ZonedDateTime dateEnd =request.getDateRangeEnd();
                 log.info("DATES: {}, {}", dateStart, dateEnd);
-                response = sensorDataRepository.findByServerTimeIsBetween(dateStart, dateEnd);
+                response = sensorDataRepository.findByServerTimeIsBetweenOrderByServerTimeDesc(dateStart, dateEnd);
             } catch(Exception err) {
                 log.error("An exception was thrown: {}", err.getMessage());
             }
         }
 
-//         if only a unit_id is provided
+//         if only a channelId is provided
 //         return all data for the selected unit
-        if (request.getUnitId() != null && request.getDateRangeStart() == null || request.getDateRangeEnd() == null) {
+        if (request.getChannelId() != null && request.getDateRangeStart() == null || request.getDateRangeEnd() == null) {
             try {
-                String name = request.getUnitId();
-                log.info("NAME: {}", name);
-                response = sensorDataRepository.findByName(name);
+                String channelId = request.getChannelId();
+                log.info("CHANNEL ID: {}", channelId);
+                response = sensorDataRepository.findByChannelIdOrderByServerTimeDesc(channelId);
             } catch(Exception err) {
                 log.error("An exception was thrown: {}", err.getMessage());
             }
@@ -206,8 +206,11 @@ public class SensorAggregator {
 
     private List<SensorData> setOutsideAirTemperature(List<SensorData> sensorDataList) throws Exception {
         for (SensorData entry : sensorDataList) {
+            // latitude and longitude provided by Ubibot API
             String latitude = entry.getLatitude();
             String longitude = entry.getLongitude();
+
+            // use lat/long to get National Weather Service grid coordinates
             WeatherResponseProperties gridInfo = new WeatherResponseProperties();
             try {
                 gridInfo = getNWSGridInfo(latitude, longitude);
@@ -215,6 +218,8 @@ public class SensorAggregator {
                 log.error("An exception has occurred: {}", err.getMessage());
                 throw new Exception(err);
             }
+
+            // use NWS grid coordinates to get current outside air temp
             ForecastResponsePeriod forecast = new ForecastResponsePeriod();
             try {
                 assert gridInfo != null;
@@ -226,6 +231,9 @@ public class SensorAggregator {
                 log.error("An exception has occurred: {}", err.getMessage());
                 throw new Exception(err);
             }
+
+            // convert Fahrenheit to Celsius and set property on sensor entry
+            assert forecast != null;
             double tempF = forecast.getTemperature();
             String tempC = convertFahrenheitToCelsius(tempF);
             entry.setOutsideTemperature(tempC);
