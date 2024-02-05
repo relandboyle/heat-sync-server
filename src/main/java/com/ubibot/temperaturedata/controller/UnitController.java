@@ -20,7 +20,7 @@ public class UnitController {
     @PostMapping("searchUnits")
     public List<ClientUnitRequest> searchForUnit(@RequestBody ClientUnitRequest request) {
         log.info(
-                "SEARCH FOR UNITS: \n channelId: {} \n fullUnit: {}",
+                "SEARCH FOR UNITS: \n buildingId: {} \n fullUnit: {}",
                 request.getBuildingId(),
                 request.getFullUnit());
 
