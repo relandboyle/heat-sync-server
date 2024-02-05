@@ -15,6 +15,7 @@ import com.ubibot.temperaturedata.repository.BuildingRepository;
 import com.ubibot.temperaturedata.repository.SensorDataRepository;
 import com.ubibot.temperaturedata.repository.UnitRepository;
 import com.ubibot.temperaturedata.service.SensorIntegrator;
+import com.ubibot.temperaturedata.utilities.TemperatureUtilities;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,9 @@ public class SensorAggregator {
 
     @Autowired
     private SensorIntegrator integrator;
+
+    @Autowired
+    private TemperatureUtilities tempUtilities;
 
     @Autowired
     private UnitRepository unitRepository;
@@ -232,10 +236,10 @@ public class SensorAggregator {
                 throw new Exception(err);
             }
 
-            // convert Fahrenheit to Celsius and set property on sensor entry
+            // convert Fahrenheit to Celsius string and set property on sensor entry
             assert forecast != null;
             double tempF = forecast.getTemperature();
-            String tempC = convertFahrenheitToCelsius(tempF);
+            String tempC = tempUtilities.convertFahrenheitToCelsius(tempF);
             entry.setOutsideTemperature(tempC);
         }
 
@@ -267,9 +271,4 @@ public class SensorAggregator {
         }
         return weatherForecast != null ? weatherForecast.getProperties().getPeriods().get(0) : null;
     }
-    private String convertFahrenheitToCelsius(double tempF) {
-        double tempC = (tempF - 32) * 5 / 9;
-        return String.format("%.2f", tempC);
-    }
-
 }
