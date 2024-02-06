@@ -17,7 +17,10 @@ public class BuildingAggregator {
     BuildingIntegrator integrator;
 
     public List<ClientBuildingRequest> searchForBuilding(ClientBuildingRequest request) {
+        // building data returned from the database query
         List<BuildingData> searchResult = integrator.searchForBuilding(request);
+
+        // map from BuildingData to ClientBuildingRequest
         List<ClientBuildingRequest> mappedResult = searchResult.stream()
                 .map(buildingData -> new ClientBuildingRequest(
                         buildingData.getId(),

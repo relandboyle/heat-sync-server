@@ -30,7 +30,7 @@ public class UnitAggregator {
         // unit data returned from the database query
         List<UnitData> searchResult = integrator.searchForUnit(request);
 
-        // map from UnitData to ClientUnitRequest - is this still valid?
+        // map from UnitData to ClientUnitRequest
         List<ClientUnitRequest> mappedResult = searchResult.stream()
                 .map(unitData -> new ClientUnitRequest(
                         unitData.getId(),
