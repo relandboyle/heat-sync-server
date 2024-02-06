@@ -9,8 +9,8 @@ import com.ubibot.temperaturedata.model.ubibot.ChannelDataFromCloud;
 import com.ubibot.temperaturedata.model.ubibot.ChannelListFromCloud;
 import com.ubibot.temperaturedata.model.weather.ForecastResponsePeriod;
 import com.ubibot.temperaturedata.model.weather.NWSForecastResponse;
-import com.ubibot.temperaturedata.model.weather.WeatherResponseProperties;
 import com.ubibot.temperaturedata.model.weather.NWSGridResponse;
+import com.ubibot.temperaturedata.model.weather.WeatherResponseProperties;
 import com.ubibot.temperaturedata.repository.BuildingRepository;
 import com.ubibot.temperaturedata.repository.SensorDataRepository;
 import com.ubibot.temperaturedata.repository.UnitRepository;
@@ -61,8 +61,14 @@ public class SensorAggregator {
     private BuildingRepository buildingRepository;
 
     // return a list of sensor data entries based on user inputs
-    public List<SensorData> getFilteredChannelData(ClientSensorRequest request) throws Exception {
-        log.info("GET FILTERED CHANNEL DATA: {}", request);
+    public List<ClientSensorRequest> getFilteredChannelData(ClientSensorRequest request) throws Exception {
+        log.info(
+                "GET FILTERED CHANNEL DATA: {}, {}, {}",
+                request.getChannelId(),
+                request.getDateRangeStart(),
+                request.getDateRangeEnd());
+
+        // initialize a list of type SensorData to return
         List<SensorData> response = null;
 
         // if a channelId AND a date range are provided
@@ -72,7 +78,7 @@ public class SensorAggregator {
                 ZonedDateTime dateStart = request.getDateRangeStart();
                 ZonedDateTime dateEnd =request.getDateRangeEnd();
                 String channelId = request.getChannelId();
-                log.info("NAME: {}\nDATES: {}, {}", channelId, dateStart, dateEnd);
+                log.info("\n NAME: {} \n DATES: {}, {}", channelId, dateStart, dateEnd);
                 response = integrator.getFilteredChannelDataByIdAndDateRange(channelId, dateStart, dateEnd);
             } catch(Exception err) {
                 log.error("An exception was thrown: {}", err.getMessage());
@@ -81,7 +87,7 @@ public class SensorAggregator {
 
          // if only a date range is provided
          // return all data from within the date range
-        if (request.getDateRangeStart() != null && request.getDateRangeEnd() != null && request.getChannelId() == null) {
+        else if (request.getChannelId() == null && request.getDateRangeStart() != null && request.getDateRangeEnd() != null) {
             try {
                 ZonedDateTime dateStart = request.getDateRangeStart();
                 ZonedDateTime dateEnd =request.getDateRangeEnd();
@@ -94,7 +100,7 @@ public class SensorAggregator {
 
 //         if only a channelId is provided
 //         return all data for the selected unit
-        if (request.getChannelId() != null && request.getDateRangeStart() == null || request.getDateRangeEnd() == null) {
+        else if (request.getChannelId() != null && request.getDateRangeStart() == null || request.getDateRangeEnd() == null) {
             try {
                 String channelId = request.getChannelId();
                 log.info("CHANNEL ID: {}", channelId);
@@ -104,7 +110,9 @@ public class SensorAggregator {
             }
         }
 
-        return response;
+        List<ClientSensorRequest> formattedResponse = mapSensorDataToClientSensorRequest(response);
+
+        return formattedResponse;
     }
 
     public String manualGetSensorDataAndPersist(SensorData sensorData) throws Exception {
@@ -158,6 +166,7 @@ public class SensorAggregator {
         integrator.persistSensorData(sensorDataListWithOutsideAirTemps);
     }
 
+    // takes sensor 'latest values' from the cloud and formats as SensorData objects
     private List<SensorData> mapChannelDataToSensorData(ChannelListFromCloud response) throws JsonProcessingException {
         // create a new list of SensorData to return
         List<SensorData> responseChannels = new ArrayList<>();
@@ -184,6 +193,26 @@ public class SensorAggregator {
             responseChannels.add(0, channel);
         }
         return responseChannels;
+    }
+
+    // reformats SensorData object as ClientSensorRequest object
+    private List<ClientSensorRequest> mapSensorDataToClientSensorRequest(List<SensorData> entries) {
+        // map from SensorData to ClientSensorRequest
+        List<ClientSensorRequest> mappedResult = entries.stream()
+                .map(entry -> new ClientSensorRequest(
+                        entry.getServerTime(),
+                        entry.getCreatedAt(),
+                        entry.getEntryId(),
+                        entry.getChannelId(),
+                        entry.getFieldOneLabel(),
+                        entry.getName(),
+                        entry.getTemperature(),
+                        entry.getLatitude(),
+                        entry.getLongitude(),
+                        entry.getOutsideTemperature()))
+                .toList();
+        log.info("SENSOR AGGREGATOR: STREAM CHECK: {}", mappedResult.get(0).getChannelId());
+        return mappedResult;
     }
 
     // calls the UbiBot web API to get last values from all sensors on the designated account
