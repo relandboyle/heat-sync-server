@@ -30,11 +30,11 @@ public class SensorIntegrator {
     }
 
     public List<SensorData> getFilteredChannelDataById(String channelId) {
-        return sensorDataRepository.findByChannelIdOrderByServerTimeDesc(channelId);
+        return sensorDataRepository.findByChannelIdOrderByServerTimeAsc(channelId);
     }
 
     public List<SensorData> getFilteredChannelDataByDateRange(ZonedDateTime dateStart, ZonedDateTime dateEnd) {
-        return sensorDataRepository.findByServerTimeIsBetweenOrderByServerTimeDesc(dateStart, dateEnd);
+        return sensorDataRepository.findByServerTimeIsBetweenOrderByServerTimeAsc(dateStart, dateEnd);
     }
 
     public void persistSensorData(List<SensorData> channelData) throws Exception {

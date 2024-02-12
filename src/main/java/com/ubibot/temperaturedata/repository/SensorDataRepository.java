@@ -8,11 +8,9 @@ import java.util.List;
 
 public interface SensorDataRepository extends JpaRepository<SensorData, String> {
 
-    List<SensorData> findByName(String name);
+    List<SensorData> findByChannelIdOrderByServerTimeAsc(String channelId);
 
-    List<SensorData> findByChannelIdOrderByServerTimeDesc(String channelId);
-
-    List<SensorData> findByServerTimeIsBetweenOrderByServerTimeDesc(ZonedDateTime dateStart, ZonedDateTime dateEnd);
+    List<SensorData> findByServerTimeIsBetweenOrderByServerTimeAsc(ZonedDateTime dateStart, ZonedDateTime dateEnd);
 
     List<SensorData> findByChannelIdAndServerTimeIsBetweenOrderByServerTimeAsc(String name, ZonedDateTime dateStart, ZonedDateTime dateEnd);
 }
