@@ -2,6 +2,7 @@ package com.ubibot.temperaturedata.controller;
 
 import com.ubibot.temperaturedata.domain.SensorAggregator;
 import com.ubibot.temperaturedata.model.client.ClientSensorRequest;
+import com.ubibot.temperaturedata.model.client.ClientSensorResponse;
 import com.ubibot.temperaturedata.model.database.SensorData;
 import com.ubibot.temperaturedata.model.ubibot.ChannelListFromCloud;
 import lombok.extern.log4j.Log4j2;
@@ -28,9 +29,9 @@ public class SensorController {
     }
 
     @PostMapping("/filteredSensorData")
-    List<ClientSensorRequest> getFilteredChannelData(@RequestBody ClientSensorRequest request) throws Exception {
+    List<ClientSensorResponse> getFilteredChannelData(@RequestBody ClientSensorRequest request) throws Exception {
         log.info("CONTROLLER: request: {}", request.getDateRangeStart());
-        List<ClientSensorRequest> response = aggregator.getFilteredChannelData(request);
+        List<ClientSensorResponse> response = aggregator.getFilteredChannelData(request);
         log.info("RESPONSE SIZE: {}", response.size());
         return response;
     }

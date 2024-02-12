@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ubibot.temperaturedata.UbibotConfigProperties;
 import com.ubibot.temperaturedata.model.client.ClientSensorRequest;
+import com.ubibot.temperaturedata.model.client.ClientSensorResponse;
 import com.ubibot.temperaturedata.model.database.SensorData;
 import com.ubibot.temperaturedata.model.ubibot.ChannelDataFromCloud;
 import com.ubibot.temperaturedata.model.ubibot.ChannelListFromCloud;
@@ -61,7 +62,10 @@ public class SensorAggregator {
     private BuildingRepository buildingRepository;
 
     // return a list of sensor data entries based on user inputs
-    public List<ClientSensorRequest> getFilteredChannelData(ClientSensorRequest request) throws Exception {
+    public List<ClientSensorResponse> getFilteredChannelData(ClientSensorRequest request) throws Exception {
+        if (request.getChannelId().isEmpty()) {
+            request.setChannelId(null);
+        }
         log.info(
                 "GET FILTERED CHANNEL DATA: {}, {}, {}",
                 request.getChannelId(),
@@ -70,6 +74,9 @@ public class SensorAggregator {
 
         // initialize a list of type SensorData to return
         List<SensorData> response = null;
+
+        Double myNumber = 12.5;
+        log.info(myNumber.getClass());
 
         // if a channelId AND a date range are provided
         // return data for only that unit, only within that date range
@@ -92,7 +99,7 @@ public class SensorAggregator {
                 ZonedDateTime dateStart = request.getDateRangeStart();
                 ZonedDateTime dateEnd =request.getDateRangeEnd();
                 log.info("DATES: {}, {}", dateStart, dateEnd);
-                response = sensorDataRepository.findByServerTimeIsBetweenOrderByServerTimeDesc(dateStart, dateEnd);
+                response = integrator.getFilteredChannelDataByDateRange(dateStart, dateEnd);
             } catch(Exception err) {
                 log.error("An exception was thrown: {}", err.getMessage());
             }
@@ -104,13 +111,13 @@ public class SensorAggregator {
             try {
                 String channelId = request.getChannelId();
                 log.info("CHANNEL ID: {}", channelId);
-                response = sensorDataRepository.findByChannelIdOrderByServerTimeDesc(channelId);
+                response = integrator.getFilteredChannelDataById(channelId);
             } catch(Exception err) {
                 log.error("An exception was thrown: {}", err.getMessage());
             }
         }
 
-        List<ClientSensorRequest> formattedResponse = mapSensorDataToClientSensorRequest(response);
+        List<ClientSensorResponse> formattedResponse = mapSensorDataToClientSensorRequest(response);
 
         return formattedResponse;
     }
@@ -196,10 +203,10 @@ public class SensorAggregator {
     }
 
     // reformats SensorData object as ClientSensorRequest object
-    private List<ClientSensorRequest> mapSensorDataToClientSensorRequest(List<SensorData> entries) {
+    private List<ClientSensorResponse> mapSensorDataToClientSensorRequest(List<SensorData> entries) {
         // map from SensorData to ClientSensorRequest
-        List<ClientSensorRequest> mappedResult = entries.stream()
-                .map(entry -> new ClientSensorRequest(
+        List<ClientSensorResponse> mappedResult = entries.stream()
+                .map(entry -> new ClientSensorResponse(
                         entry.getServerTime(),
                         entry.getCreatedAt(),
                         entry.getEntryId(),
@@ -209,7 +216,8 @@ public class SensorAggregator {
                         entry.getTemperature(),
                         entry.getLatitude(),
                         entry.getLongitude(),
-                        entry.getOutsideTemperature()))
+                        entry.getOutsideTemperature()
+                ))
                 .toList();
         log.info("SENSOR AGGREGATOR: STREAM CHECK: {}", mappedResult.get(0).getChannelId());
         return mappedResult;
