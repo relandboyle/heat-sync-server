@@ -11,4 +11,9 @@ public class TemperatureUtilities {
         double tempC = (tempF - 32) * 5 / 9;
         return String.format("%.2f", tempC);
     }
+
+    public String convertCelsiusToFahrenheit(double tempC) {
+        double tempF = (tempC * 9 / 5) + 32;
+        return String.format("%.2f", tempF);
+    }
 }
