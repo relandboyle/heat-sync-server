@@ -8,15 +8,7 @@ import com.ubibot.temperaturedata.model.client.ClientSensorResponse;
 import com.ubibot.temperaturedata.model.database.SensorData;
 import com.ubibot.temperaturedata.model.ubibot.ChannelDataFromCloud;
 import com.ubibot.temperaturedata.model.ubibot.ChannelListFromCloud;
-import com.ubibot.temperaturedata.model.weather.ForecastResponsePeriod;
-import com.ubibot.temperaturedata.model.weather.NWSForecastResponse;
-import com.ubibot.temperaturedata.model.weather.NWSGridResponse;
-import com.ubibot.temperaturedata.model.weather.WeatherResponseProperties;
-import com.ubibot.temperaturedata.repository.BuildingRepository;
-import com.ubibot.temperaturedata.repository.SensorDataRepository;
-import com.ubibot.temperaturedata.repository.UnitRepository;
 import com.ubibot.temperaturedata.service.SensorIntegrator;
-import com.ubibot.temperaturedata.utilities.TemperatureUtilities;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,16 +42,7 @@ public class SensorAggregator {
     private SensorIntegrator integrator;
 
     @Autowired
-    private TemperatureUtilities tempUtilities;
-
-    @Autowired
-    private UnitRepository unitRepository;
-
-    @Autowired
-    private SensorDataRepository sensorDataRepository;
-
-    @Autowired
-    private BuildingRepository buildingRepository;
+    private NWSAggregator nwsAggregator;
 
     // return a list of sensor data entries based on user inputs
     public List<ClientSensorResponse> getFilteredChannelData(ClientSensorRequest request) throws Exception {
@@ -73,7 +56,7 @@ public class SensorAggregator {
                 request.getDateRangeEnd());
 
         // initialize a list of type SensorData to return
-        List<SensorData> response = null;
+        List<SensorData> response = new ArrayList<>();
 
         Double myNumber = 12.5;
         log.info(myNumber.getClass());
@@ -117,9 +100,7 @@ public class SensorAggregator {
             }
         }
 
-        List<ClientSensorResponse> formattedResponse = mapSensorDataToClientSensorRequest(response);
-
-        return formattedResponse;
+        return mapSensorDataToClientSensorRequest(response);
     }
 
     public String manualGetSensorDataAndPersist(SensorData sensorData) throws Exception {
@@ -167,7 +148,7 @@ public class SensorAggregator {
         }
 
         // get the outside air temperature for each entry
-        List<SensorData> sensorDataListWithOutsideAirTemps = setOutsideAirTemperature(sensorDataList);
+        List<SensorData> sensorDataListWithOutsideAirTemps = nwsAggregator.setOutsideAirTemperature(sensorDataList);
 
         // call a method to persist the prepared data to the database
         integrator.persistSensorData(sensorDataListWithOutsideAirTemps);
@@ -221,91 +202,5 @@ public class SensorAggregator {
                 .toList();
         log.info("SENSOR AGGREGATOR: STREAM CHECK: {}", mappedResult.get(0).getChannelId());
         return mappedResult;
-    }
-
-    // calls the UbiBot web API to get last values from all sensors on the designated account
-    public ChannelListFromCloud getCurrentChannelData(String accountKey) throws URISyntaxException {
-        String webApiUrl = config.WEB_API_URL();
-        String requestUrl = String.valueOf(new URI( "https", webApiUrl, "/channels", "account_key=" + accountKey, null));
-        log.info("TESTING URI CONSTRUCTION: {}", requestUrl);
-
-        ChannelListFromCloud currentData = integrator.getCurrentChannelData(requestUrl);
-        List<ChannelDataFromCloud> channelList = currentData.getChannels();
-        for (var channel : channelList) {
-            channel.setTemperatureValue(extractTemperatureFromLastValues(channel.getLastValues()));
-//            channel.setLastValues(null);
-        }
-        return currentData;
-    }
-
-    private String extractTemperatureFromLastValues(String lastValues) {
-        log.info("LAST VALUES: {}", lastValues);
-        ObjectMapper jsonMapper = new ObjectMapper();
-
-        return "25";
-    }
-
-    private List<SensorData> setOutsideAirTemperature(List<SensorData> sensorDataList) throws Exception {
-        for (SensorData entry : sensorDataList) {
-            // latitude and longitude provided by Ubibot API
-            String latitude = entry.getLatitude();
-            String longitude = entry.getLongitude();
-
-            // use lat/long to get National Weather Service grid coordinates
-            WeatherResponseProperties gridInfo = new WeatherResponseProperties();
-            try {
-                gridInfo = getNWSGridInfo(latitude, longitude);
-            } catch (Exception err) {
-                log.error("An exception has occurred: {}", err.getMessage());
-                throw new Exception(err);
-            }
-
-            // use NWS grid coordinates to get current outside air temp
-            ForecastResponsePeriod forecast = new ForecastResponsePeriod();
-            try {
-                assert gridInfo != null;
-                String gridId = gridInfo.getGridId();
-                String gridX = gridInfo.getGridX();
-                String gridY = gridInfo.getGridY();
-                forecast = getNWSForecastInfo(gridId, gridX, gridY);
-            } catch(Exception err) {
-                log.error("An exception has occurred: {}", err.getMessage());
-                throw new Exception(err);
-            }
-
-            // convert Fahrenheit to Celsius string and set property on sensor entry
-            assert forecast != null;
-            double tempF = forecast.getTemperature();
-            String tempC = tempUtilities.convertFahrenheitToCelsius(tempF);
-            entry.setOutsideTemperature(tempC);
-        }
-
-        return sensorDataList;
-    }
-
-    private WeatherResponseProperties getNWSGridInfo(String latitude, String longitude) throws Exception {
-        String requestUrl = String.valueOf(new URI("https", "api.weather.gov", "/points/" + latitude + "," + longitude, null));
-        log.info("REQUEST URL: {}", requestUrl);
-        NWSGridResponse currentWeather = new NWSGridResponse();
-        try {
-            currentWeather = restTemplate.getForObject(requestUrl, NWSGridResponse.class);
-        } catch (Exception err) {
-            log.error("An exception has occurred: {}", err.getMessage());
-            throw new Exception(err);
-        }
-        return currentWeather != null ? currentWeather.getProperties() : null;
-    }
-
-    private ForecastResponsePeriod getNWSForecastInfo(String gridId, String gridX, String gridY) throws Exception {
-        String requestUrl = String.valueOf(new URI("https", "api.weather.gov","/gridpoints/" + gridId + "/" + gridX + "," + gridY + "/forecast", null));
-        log.info("REQUEST URL: {}", requestUrl);
-        NWSForecastResponse weatherForecast = new NWSForecastResponse();
-        try {
-            weatherForecast = restTemplate.getForObject(requestUrl, NWSForecastResponse.class);
-        } catch (Exception err) {
-            log.error("An exception has occurred: {}", err.getMessage());
-            throw new Exception(err);
-        }
-        return weatherForecast != null ? weatherForecast.getProperties().getPeriods().get(0) : null;
     }
 }

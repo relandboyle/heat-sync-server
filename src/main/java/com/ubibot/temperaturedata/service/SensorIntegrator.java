@@ -1,7 +1,6 @@
 package com.ubibot.temperaturedata.service;
 
 import com.ubibot.temperaturedata.model.database.SensorData;
-import com.ubibot.temperaturedata.model.ubibot.ChannelListFromCloud;
 import com.ubibot.temperaturedata.repository.SensorDataRepository;
 import com.ubibot.temperaturedata.repository.UnitRepository;
 import lombok.extern.log4j.Log4j2;
@@ -46,9 +45,5 @@ public class SensorIntegrator {
         }
 
         log.info("Sensor data persisted to database: {}", channelData);
-    }
-
-    public ChannelListFromCloud getCurrentChannelData(String url) {
-        return restTemplate.getForObject(url, ChannelListFromCloud.class);
     }
 }
