@@ -10,17 +10,16 @@ import com.ubibot.temperaturedata.model.ubibot.ChannelDataFromCloud;
 import com.ubibot.temperaturedata.model.ubibot.ChannelListFromCloud;
 import com.ubibot.temperaturedata.service.SensorIntegrator;
 import lombok.extern.log4j.Log4j2;
+import org.javatuples.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 @Log4j2
 @Service
@@ -42,7 +41,7 @@ public class SensorAggregator {
     private SensorIntegrator integrator;
 
     @Autowired
-    private NWSAggregator nwsAggregator;
+    private WeatherServiceAggregator nwsAggregator;
 
     // return a list of sensor data entries based on user inputs
     public List<ClientSensorResponse> getFilteredChannelData(ClientSensorRequest request) throws Exception {
@@ -100,7 +99,10 @@ public class SensorAggregator {
             }
         }
 
-        return mapSensorDataToClientSensorRequest(response);
+        List<ClientSensorResponse> mappedResponse = mapSensorDataToClientSensorResponse(response);
+        List<ClientSensorResponse> responseWithSpots = flutterSpotGenerator(mappedResponse);
+
+        return responseWithSpots;
     }
 
     public String manualGetSensorDataAndPersist(SensorData sensorData) throws Exception {
@@ -184,7 +186,7 @@ public class SensorAggregator {
     }
 
     // reformats SensorData object as ClientSensorRequest object
-    private List<ClientSensorResponse> mapSensorDataToClientSensorRequest(List<SensorData> entries) {
+    private List<ClientSensorResponse> mapSensorDataToClientSensorResponse(List<SensorData> entries) {
         // map from SensorData to ClientSensorRequest
         List<ClientSensorResponse> mappedResult = entries.stream()
                 .map(entry -> new ClientSensorResponse(
@@ -202,5 +204,24 @@ public class SensorAggregator {
                 .toList();
         log.info("SENSOR AGGREGATOR: STREAM CHECK: {}", mappedResult.get(0).getChannelId());
         return mappedResult;
+    }
+
+    // add a FlutterSpot to each entry in the response data
+    private List<ClientSensorResponse> flutterSpotGenerator(List<ClientSensorResponse> response) {
+        int bottomTileSpacer = response.size() / 10;
+        log.info("SIZE: {}", bottomTileSpacer);
+        for (int i = 0; i < response.size(); i++) {
+            ClientSensorResponse entry = response.get(i);
+            Double spotServerTime = (double) entry.getServerTime().toInstant().toEpochMilli();
+            Double spotTemperature = Double.parseDouble(entry.getTemperature());
+            entry.setFlutterSpot(new Pair<>(spotServerTime, spotTemperature));
+            if (i % bottomTileSpacer == 0) {
+                SimpleDateFormat dateFormatter = new SimpleDateFormat("E, MMM dd");
+                entry.setChartBottomTitle(dateFormatter.format(Date.from(entry.getServerTime().toInstant())));
+            }
+            ZonedDateTime entryServerTime = ZonedDateTime.parse(entry.getServerTime().toString());
+            log.info("ENTRY SERVER TIME: {} \n SERVER TIME: {}", entryServerTime, entry.getServerTime());
+        }
+        return response;
     }
 }

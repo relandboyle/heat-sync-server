@@ -3,7 +3,7 @@ package com.ubibot.temperaturedata.domain;
 import com.ubibot.temperaturedata.model.database.SensorData;
 import com.ubibot.temperaturedata.model.weather.ForecastResponsePeriod;
 import com.ubibot.temperaturedata.model.weather.WeatherResponseProperties;
-import com.ubibot.temperaturedata.service.NWSIntegrator;
+import com.ubibot.temperaturedata.service.WeatherServiceIntegrator;
 import com.ubibot.temperaturedata.utilities.TemperatureUtilities;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +13,10 @@ import java.util.List;
 
 @Log4j2
 @Service
-public class NWSAggregator {
+public class WeatherServiceAggregator {
 
     @Autowired
-    NWSIntegrator nwsIntegrator;
+    WeatherServiceIntegrator nwsIntegrator;
 
     @Autowired
     TemperatureUtilities tempUtilities;
@@ -50,7 +50,6 @@ public class NWSAggregator {
             }
 
             // convert Fahrenheit to Celsius string and set property on sensor entry
-            assert forecast != null;
             double tempF = forecast.getTemperature();
             String tempC = tempUtilities.convertFahrenheitToCelsius(tempF);
             entry.setOutsideTemperature(tempC);
