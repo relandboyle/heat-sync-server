@@ -13,7 +13,7 @@ import java.net.URI;
 
 @Log4j2
 @Service
-public class NWSIntegrator {
+public class WeatherServiceIntegrator {
 
     @Autowired
     RestTemplate restTemplate;
