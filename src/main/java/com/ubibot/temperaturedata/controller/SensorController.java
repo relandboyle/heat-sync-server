@@ -8,8 +8,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @Log4j2
 @CrossOrigin(origins = {"http://localhost:12345", "https://heat-sync.net"})
@@ -20,10 +18,9 @@ public class SensorController {
     SensorAggregator aggregator;
 
     @PostMapping("/filteredSensorData")
-    List<ClientSensorResponse> getFilteredChannelData(@RequestBody ClientSensorRequest request) throws Exception {
+    ClientSensorResponse getFilteredChannelData(@RequestBody ClientSensorRequest request) throws Exception {
         log.info("CONTROLLER: request: {}", request.getDateRangeStart());
-        List<ClientSensorResponse> response = aggregator.getFilteredChannelData(request);
-        log.info("RESPONSE SIZE: {}", response.size());
+        ClientSensorResponse response = aggregator.getFilteredChannelData(request);
         return response;
     }
 
