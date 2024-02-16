@@ -19,10 +19,6 @@ public class BuildingIntegrator {
 
     @Cacheable(cacheNames = "BuildingCache", unless = "#result == null")
     public List<BuildingData> searchForBuilding(ClientBuildingRequest request) {
-
-//        List<BuildingData> testing = buildingRepository.findByFullAddressIgnoreCaseContaining(request.getFullAddress());
-//        log.info("TESTING - UNITS: {}", testing.get(0).getUnits().toString());
-
         log.info("BUILDING INTEGRATOR - SEARCH FOR BUILDING - fullAddress: {}",
                 request.getFullAddress());
         return buildingRepository.findByFullAddressIgnoreCaseContaining(request.getFullAddress());

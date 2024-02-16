@@ -1,31 +1,34 @@
 package com.ubibot.temperaturedata.service;
 
 import com.ubibot.temperaturedata.model.database.SensorData;
+import com.ubibot.temperaturedata.model.ubibot.ChannelListFromCloud;
 import com.ubibot.temperaturedata.repository.SensorDataRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 
 @Log4j2
 @Service
-public class SensorIntegrator {
+public class ScheduleIntegrator {
 
     @Autowired
-    SensorDataRepository sensorDataRepository;
+    private RestTemplate restTemplate;
 
-    public List<SensorData> getFilteredChannelDataByIdAndDateRange(String channelId, ZonedDateTime dateStart, ZonedDateTime dateEnd) {
-        return sensorDataRepository.findByChannelIdAndServerTimeIsBetweenOrderByServerTimeAsc(channelId, dateStart, dateEnd);
-    }
+    @Autowired
+    private SensorDataRepository sensorDataRepository;
 
-    public List<SensorData> getFilteredChannelDataById(String channelId) {
-        return sensorDataRepository.findByChannelIdOrderByServerTimeAsc(channelId);
-    }
-
-    public List<SensorData> getFilteredChannelDataByDateRange(ZonedDateTime dateStart, ZonedDateTime dateEnd) {
-        return sensorDataRepository.findByServerTimeIsBetweenOrderByServerTimeAsc(dateStart, dateEnd);
+    public ChannelListFromCloud getChannelDataFromCloud(String requestUrl) throws Exception {
+        ChannelListFromCloud channelList;
+        try {
+            channelList = restTemplate.getForObject(requestUrl, ChannelListFromCloud.class);
+        } catch(Exception err) {
+            log.error("An exception has occurred: {}", err.getMessage());
+            throw new Exception(err);
+        }
+        return channelList;
     }
 
     public void persistSensorData(List<SensorData> channelData) throws Exception {

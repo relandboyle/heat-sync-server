@@ -20,14 +20,12 @@ public class SensorController {
     @PostMapping("/filteredSensorData")
     ClientSensorResponse getFilteredChannelData(@RequestBody ClientSensorRequest request) throws Exception {
         log.info("CONTROLLER: request: {}", request.getDateRangeStart());
-        ClientSensorResponse response = aggregator.getFilteredChannelData(request);
-        return response;
+        return aggregator.getFilteredChannelData(request);
     }
 
     @PostMapping("/newSensor")
     String receiveChannelData(@RequestBody SensorData sensorData) throws Exception {
-        System.out.println("CONTROLLER INPUTS: ");
-        System.out.println(sensorData);
+        log.info("CONTROLLER INPUTS: {}", sensorData.getChannelId());
         return aggregator.manualGetSensorDataAndPersist(sensorData);
     }
 }
