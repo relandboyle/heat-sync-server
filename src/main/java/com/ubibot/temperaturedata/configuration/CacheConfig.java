@@ -1,4 +1,4 @@
-package com.ubibot.temperaturedata;
+package com.ubibot.temperaturedata.configuration;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.cache.CacheManager;
