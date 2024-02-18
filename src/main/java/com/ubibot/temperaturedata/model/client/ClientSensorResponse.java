@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 public class ClientSensorResponse {
 
-    private List<Long> bottomTileSpacer;
+    private List<Long> bottomTitleSpacer;
 
     private List<ClientSensorData> sensorData;
 }

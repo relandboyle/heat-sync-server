@@ -7,7 +7,6 @@ import com.ubibot.temperaturedata.model.client.ClientSensorResponse;
 import com.ubibot.temperaturedata.model.database.SensorData;
 import com.ubibot.temperaturedata.service.SensorIntegrator;
 import lombok.extern.log4j.Log4j2;
-import org.javatuples.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -88,11 +87,10 @@ public class SensorAggregator {
 
 
         List<ClientSensorData> mappedResponse = mapSensorDataToClientSensorResponse(response);
-        List<ClientSensorData> responseWithSpots = flutterSpotGenerator(mappedResponse);
+//        List<ClientSensorData> responseWithSpots = flutterSpotGenerator(mappedResponse);
         ClientSensorResponse responseWithSpacer = new ClientSensorResponse();
-        responseWithSpacer.setSensorData(responseWithSpots);
-        responseWithSpacer.setBottomTileSpacer(bottomTileSpacerGenerator(responseWithSpots));
-
+        responseWithSpacer.setSensorData(mappedResponse);
+        responseWithSpacer.setBottomTitleSpacer(bottomTitleSpacerGenerator(mappedResponse));
         return responseWithSpacer;
     }
     // end getFilteredChannelData
@@ -114,7 +112,7 @@ public class SensorAggregator {
     // reformats SensorData object as ClientSensorRequest object
     private List<ClientSensorData> mapSensorDataToClientSensorResponse(List<SensorData> entries) {
         // map from SensorData to ClientSensorRequest
-        List<ClientSensorData> mappedResult = entries.stream()
+        return entries.stream()
                 .map(entry -> new ClientSensorData(
                         entry.getServerTime().toInstant().toEpochMilli(),
                         entry.getCreatedAt().toInstant().toEpochMilli(),
@@ -126,33 +124,30 @@ public class SensorAggregator {
                         entry.getLatitude(),
                         entry.getLongitude(),
                         entry.getOutsideTemperature()
-                ))
-                .toList();
-        log.info("SENSOR AGGREGATOR: STREAM CHECK: {}", mappedResult.get(0).getChannelId());
-        return mappedResult;
+                )).toList();
     }
 
     // add a FlutterSpot to each entry in the response data
-    private List<ClientSensorData> flutterSpotGenerator(List<ClientSensorData> response) {
-        int bottomTileSpacer = response.size() / 10;
-        log.info("SIZE: {}", bottomTileSpacer);
-        for (ClientSensorData entry : response) {
-            Long spotServerTime = entry.getServerTime();
-            Double spotTemperature = Double.parseDouble(entry.getTemperature());
-            entry.setFlutterSpot(new Pair<>(spotServerTime, spotTemperature));
-        }
-        return response;
-    }
+//    private List<ClientSensorData> flutterSpotGenerator(List<ClientSensorData> response) {
+//        int bottomTileSpacer = response.size() / 10;
+//        log.info("SPACER SIZE: {}", bottomTileSpacer);
+//        for (ClientSensorData entry : response) {
+//            Long spotServerTime = entry.getServerTime();
+//            Double spotTemperature = Double.parseDouble(entry.getTemperature());
+//            entry.setFlutterSpot(new Pair<>(spotServerTime, spotTemperature));
+//        }
+//        return response;
+//    }
 
     // generate a list of doubles from serverTime entries
-    private List<Long> bottomTileSpacerGenerator(List<ClientSensorData> response) {
+    private List<Long> bottomTitleSpacerGenerator(List<ClientSensorData> response) {
         int responseSize = response.size();
-        int bottomTileSpacer = responseSize / 10;
+        int bottomTitleSpacer = responseSize / 10;
         List<Long> spacer = new ArrayList<>();
 
         for (int i = 0; i < responseSize; i++) {
             ClientSensorData entry = response.get(i);
-            if (i % bottomTileSpacer == 0) {
+            if (i % bottomTitleSpacer == 0) {
                 spacer.add(entry.getServerTime());
             }
         }
