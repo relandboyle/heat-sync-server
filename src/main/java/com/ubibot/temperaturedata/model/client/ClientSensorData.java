@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.javatuples.Pair;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,28 +32,28 @@ public class ClientSensorData {
 
     private String outsideTemperature;
 
-    private Pair<Long, Double> flutterSpot;
+//    private Pair<Long, Double> flutterSpot;
 
-    public ClientSensorData(
-            Long serverTime,
-            Long createdAt,
-            String entryId,
-            String channelId,
-            String fieldOneLabel,
-            String name,
-            String temperature,
-            String latitude,
-            String longitude,
-            String outsideTemperature) {
-        this.serverTime = serverTime;
-        this.createdAt = createdAt;
-        this.entryId = entryId;
-        this.channelId = channelId;
-        this.fieldOneLabel = fieldOneLabel;
-        this.name = name;
-        this.temperature = temperature;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.outsideTemperature = outsideTemperature;
-    }
+//    public ClientSensorData(
+//            Long serverTime,
+//            Long createdAt,
+//            String entryId,
+//            String channelId,
+//            String fieldOneLabel,
+//            String name,
+//            String temperature,
+//            String latitude,
+//            String longitude,
+//            String outsideTemperature) {
+//        this.serverTime = serverTime;
+//        this.createdAt = createdAt;
+//        this.entryId = entryId;
+//        this.channelId = channelId;
+//        this.fieldOneLabel = fieldOneLabel;
+//        this.name = name;
+//        this.temperature = temperature;
+//        this.latitude = latitude;
+//        this.longitude = longitude;
+//        this.outsideTemperature = outsideTemperature;
+//    }
 }
