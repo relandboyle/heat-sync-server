@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedList;
 import java.util.List;
 
 @Log4j2
@@ -32,5 +33,21 @@ public class BuildingController {
     public String createBuilding(@RequestBody ClientBuildingRequest newBuilding) {
         log.info("CREATE BUILDING: {}", newBuilding);
         return aggregator.createBuilding(newBuilding);
+    }
+
+    @GetMapping("test")
+    public String dataStructuresTest() {
+        List<String> linkedList = new LinkedList<>();
+        linkedList.add("First");
+        linkedList.add("Second");
+        linkedList.add("Third");
+        linkedList.add("Fourth");
+        linkedList.add("Fifth");
+        System.out.println(linkedList.size());
+        System.out.println(linkedList.get(2));
+        linkedList.remove(2);
+        System.out.println(linkedList.toString());
+
+        return "SUCCESS";
     }
 }
