@@ -24,7 +24,7 @@ public class BuildingController {
     public List<ClientBuildingRequest> searchForBuilding(@RequestBody ClientBuildingRequest buildingQuery) {
         log.info("BUILDING CONTROLLER - SEARCH FOR BUILDING - Query: {}",
                 buildingQuery.getFullAddress());
-        List<ClientBuildingRequest> response = aggregator.searchForBuilding(buildingQuery);
+        var response = aggregator.searchForBuilding(buildingQuery);
         log.info("RESPONSE TO BUILDING REQUEST: {}", response.get(0).getFullAddress());
         return response;
     }
@@ -37,7 +37,7 @@ public class BuildingController {
 
     @GetMapping("test")
     public String dataStructuresTest() {
-        List<String> linkedList = new LinkedList<>();
+        var linkedList = new LinkedList<>();
         linkedList.add("First");
         linkedList.add("Second");
         linkedList.add("Third");
