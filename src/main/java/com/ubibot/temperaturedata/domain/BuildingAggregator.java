@@ -18,10 +18,10 @@ public class BuildingAggregator {
 
     public List<ClientBuildingRequest> searchForBuilding(ClientBuildingRequest request) {
         // building data returned from the database query
-        List<BuildingData> searchResult = integrator.searchForBuilding(request);
+        var searchResult = integrator.searchForBuilding(request);
 
         // map from BuildingData to ClientBuildingRequest
-        List<ClientBuildingRequest> mappedResult = searchResult.stream()
+        var mappedResult = searchResult.stream()
                 .map(buildingData -> new ClientBuildingRequest(
                         buildingData.getId(),
                         buildingData.getStreetNumber(),
@@ -37,7 +37,7 @@ public class BuildingAggregator {
     }
 
     public String createBuilding(ClientBuildingRequest request) {
-        BuildingData newBuilding = new BuildingData();
+        var newBuilding = new BuildingData();
         if (request != null) {
             newBuilding.setId(request.getId());
             newBuilding.setStreetNumber(request.getStreetNumber());

@@ -39,10 +39,7 @@ public class SensorAggregator {
                 request.getDateRangeEnd());
 
         // initialize a list of type SensorData to return
-        List<SensorData> response = new ArrayList<>();
-
-        Double myNumber = 12.5;
-        log.info(myNumber.getClass());
+        var response = new ArrayList<SensorData>();
 
         // if a channelId AND a date range are provided
         // return data for only that unit, only within that date range
@@ -86,9 +83,8 @@ public class SensorAggregator {
         log.info("RESPONSE SIZE: {}", response.size());
 
 
-        List<ClientSensorData> mappedResponse = mapSensorDataToClientSensorResponse(response);
-//        List<ClientSensorData> responseWithSpots = flutterSpotGenerator(mappedResponse);
-        ClientSensorResponse responseWithSpacer = new ClientSensorResponse();
+        var mappedResponse = mapSensorDataToClientSensorResponse(response);
+        var responseWithSpacer = new ClientSensorResponse();
         responseWithSpacer.setSensorData(mappedResponse);
         responseWithSpacer.setBottomTitleSpacer(bottomTitleSpacerGenerator(mappedResponse));
         return responseWithSpacer;
@@ -96,10 +92,8 @@ public class SensorAggregator {
     // end getFilteredChannelData
 
     public String manualGetSensorDataAndPersist(SensorData sensorData) throws Exception {
-        System.out.println("HIT AGGREGATOR");
-        List<SensorData> sensorDataList = new ArrayList<>();
+        var sensorDataList = new ArrayList<SensorData>();
         sensorDataList.add(sensorData);
-        System.out.println("LIST: " + sensorDataList);
         try {
             sensorIntegrator.persistSensorData(sensorDataList);
         } catch(Exception err) {
@@ -127,26 +121,14 @@ public class SensorAggregator {
                 )).toList();
     }
 
-    // add a FlutterSpot to each entry in the response data
-//    private List<ClientSensorData> flutterSpotGenerator(List<ClientSensorData> response) {
-//        int bottomTileSpacer = response.size() / 10;
-//        log.info("SPACER SIZE: {}", bottomTileSpacer);
-//        for (ClientSensorData entry : response) {
-//            Long spotServerTime = entry.getServerTime();
-//            Double spotTemperature = Double.parseDouble(entry.getTemperature());
-//            entry.setFlutterSpot(new Pair<>(spotServerTime, spotTemperature));
-//        }
-//        return response;
-//    }
-
     // generate a list of doubles from serverTime entries
     private List<Long> bottomTitleSpacerGenerator(List<ClientSensorData> response) {
+        var spacer = new ArrayList<Long>();
         int responseSize = response.size();
         int bottomTitleSpacer = responseSize / 10;
-        List<Long> spacer = new ArrayList<>();
 
         for (int i = 0; i < responseSize; i++) {
-            ClientSensorData entry = response.get(i);
+            var entry = response.get(i);
             if (i % bottomTitleSpacer == 0) {
                 spacer.add(entry.getServerTime());
             }

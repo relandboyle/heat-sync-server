@@ -26,7 +26,7 @@ public class BuildingIntegrator {
 
     public String createBuilding(BuildingData newBuilding) {
         log.info("newBuilding object received by BuildingDataIntegrator: {}", newBuilding);
-        BuildingData persistedBuilding = buildingRepository.save(newBuilding);
+        var persistedBuilding = buildingRepository.save(newBuilding);
         log.info("CONFIRMATION: {}", persistedBuilding);
         return "New building created successfully with ID: " +  persistedBuilding.getId();
     }

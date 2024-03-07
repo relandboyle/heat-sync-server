@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
@@ -16,15 +17,15 @@ public class SensorIntegrator {
     @Autowired
     SensorDataRepository sensorDataRepository;
 
-    public List<SensorData> getFilteredChannelDataByIdAndDateRange(String channelId, ZonedDateTime dateStart, ZonedDateTime dateEnd) {
+    public ArrayList<SensorData> getFilteredChannelDataByIdAndDateRange(String channelId, ZonedDateTime dateStart, ZonedDateTime dateEnd) {
         return sensorDataRepository.findByChannelIdAndServerTimeIsBetweenOrderByServerTimeAsc(channelId, dateStart, dateEnd);
     }
 
-    public List<SensorData> getFilteredChannelDataById(String channelId) {
+    public ArrayList<SensorData> getFilteredChannelDataById(String channelId) {
         return sensorDataRepository.findByChannelIdOrderByServerTimeAsc(channelId);
     }
 
-    public List<SensorData> getFilteredChannelDataByDateRange(ZonedDateTime dateStart, ZonedDateTime dateEnd) {
+    public ArrayList<SensorData> getFilteredChannelDataByDateRange(ZonedDateTime dateStart, ZonedDateTime dateEnd) {
         return sensorDataRepository.findByServerTimeIsBetweenOrderByServerTimeAsc(dateStart, dateEnd);
     }
 

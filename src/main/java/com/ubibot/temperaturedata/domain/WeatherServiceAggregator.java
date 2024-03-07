@@ -22,13 +22,13 @@ public class WeatherServiceAggregator {
     TemperatureUtilities tempUtilities;
 
     public List<SensorData> setOutsideAirTemperature(List<SensorData> sensorDataList) throws Exception {
-        for (SensorData entry : sensorDataList) {
+        for (var entry : sensorDataList) {
             // latitude and longitude provided by Ubibot API
             String latitude = entry.getLatitude();
             String longitude = entry.getLongitude();
 
             // use lat/long to get National Weather Service grid coordinates
-            WeatherResponseProperties gridInfo = new WeatherResponseProperties();
+            var gridInfo = new WeatherResponseProperties();
             try {
                 gridInfo = getNWSGridInfo(latitude, longitude);
             } catch (Exception err) {
@@ -37,9 +37,8 @@ public class WeatherServiceAggregator {
             }
 
             // use NWS grid coordinates to get current outside air temp
-            ForecastResponsePeriod forecast = new ForecastResponsePeriod();
+            var forecast = new ForecastResponsePeriod();
             try {
-                assert gridInfo != null;
                 String gridId = gridInfo.getGridId();
                 String gridX = gridInfo.getGridX();
                 String gridY = gridInfo.getGridY();
