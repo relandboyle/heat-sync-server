@@ -1,7 +1,6 @@
 package com.ubibot.temperaturedata.domain;
 
 import com.ubibot.temperaturedata.model.client.ClientUnitRequest;
-import com.ubibot.temperaturedata.model.database.BuildingData;
 import com.ubibot.temperaturedata.model.database.UnitData;
 import com.ubibot.temperaturedata.repository.BuildingRepository;
 import com.ubibot.temperaturedata.repository.UnitRepository;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Log4j2
 @Service
@@ -28,10 +26,10 @@ public class UnitAggregator {
 
     public List<ClientUnitRequest> searchForUnit(ClientUnitRequest request) {
         // unit data returned from the database query
-        List<UnitData> searchResult = integrator.searchForUnit(request);
+        var searchResult = integrator.searchForUnit(request);
 
         // map from UnitData to ClientUnitRequest
-        List<ClientUnitRequest> mappedResult = searchResult.stream()
+        var mappedResult = searchResult.stream()
                 .map(unitData -> new ClientUnitRequest(
                         unitData.getId(),
                         unitData.getTenantName(),
@@ -47,9 +45,9 @@ public class UnitAggregator {
         // should pass a UnitData object to Integrator which includes the buildingId and fullUnit
         log.info("AGGREGATOR - CREATE OR UPDATE UNIT");
         // get a reference to the existing building in the database
-        Optional<BuildingData> existingBuilding = buildingRepository.findById(request.getBuildingId());
+        var existingBuilding = buildingRepository.findById(request.getBuildingId());
 
-        UnitData newUnit = new UnitData();
+        var newUnit = new UnitData();
         if (existingBuilding.isPresent()) {
             newUnit.setUnitNumber(request.getUnitNumber());
             newUnit.setTenantName(request.getTenantName());

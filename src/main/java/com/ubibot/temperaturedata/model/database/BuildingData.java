@@ -17,6 +17,7 @@ public class BuildingData implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+
     @Column(name = "id")
     private String id;
 
@@ -40,4 +41,7 @@ public class BuildingData implements Serializable {
 
     @Column(name = "full_address")
     private String fullAddress;
+
+    @Column(name = "building_color")
+    private String buildingColor;
 }

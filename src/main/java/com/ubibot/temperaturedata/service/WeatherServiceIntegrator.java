@@ -21,7 +21,7 @@ public class WeatherServiceIntegrator {
     public WeatherResponseProperties getNWSGridInfo(String latitude, String longitude) throws Exception {
         String requestUrl = String.valueOf(new URI("https", "api.weather.gov", "/points/" + latitude + "," + longitude, null));
         log.info("REQUEST URL: {}", requestUrl);
-        NWSGridResponse currentWeather = new NWSGridResponse();
+        var currentWeather = new NWSGridResponse();
         try {
             currentWeather = restTemplate.getForObject(requestUrl, NWSGridResponse.class);
         } catch (Exception err) {
@@ -34,7 +34,7 @@ public class WeatherServiceIntegrator {
     public ForecastResponsePeriod getNWSForecastInfo(String gridId, String gridX, String gridY) throws Exception {
         String requestUrl = String.valueOf(new URI("https", "api.weather.gov","/gridpoints/" + gridId + "/" + gridX + "," + gridY + "/forecast", null));
         log.info("REQUEST URL: {}", requestUrl);
-        NWSForecastResponse weatherForecast = new NWSForecastResponse();
+        var weatherForecast = new NWSForecastResponse();
         try {
             weatherForecast = restTemplate.getForObject(requestUrl, NWSForecastResponse.class);
         } catch (Exception err) {

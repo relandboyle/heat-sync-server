@@ -21,7 +21,7 @@ public class ScheduleIntegrator {
     private SensorDataRepository sensorDataRepository;
 
     public ChannelListFromCloud getChannelDataFromCloud(String requestUrl) throws Exception {
-        ChannelListFromCloud channelList;
+        var channelList = new ChannelListFromCloud();
         try {
             channelList = restTemplate.getForObject(requestUrl, ChannelListFromCloud.class);
         } catch(Exception err) {

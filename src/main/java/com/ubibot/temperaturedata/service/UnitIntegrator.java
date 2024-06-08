@@ -23,7 +23,7 @@ public class UnitIntegrator {
     public List<UnitData> searchForUnit(ClientUnitRequest request) {
         String buildingId = request.getBuildingId();
         String fullUnit = request.getFullUnit();
-        List<UnitData> unitSearchResults = unitRepository.findByBuildingIdAndFullUnitIgnoreCaseContaining(buildingId, fullUnit);
+        var unitSearchResults = unitRepository.findByBuildingIdAndFullUnitIgnoreCaseContaining(buildingId, fullUnit);
         log.info("unitSearchResults: FULL UNIT: {}", unitSearchResults.get(0).getFullUnit());
         return unitSearchResults;
     }
@@ -32,7 +32,7 @@ public class UnitIntegrator {
         log.info("UNIT INTEGRATOR - CREATE OR UPDATE UNIT");
 
         try {
-            UnitData persistedUnit = unitRepository.save(newUnit);
+            var persistedUnit = unitRepository.save(newUnit);
             log.info("UNIT INTEGRATOR - SUCCESSFULLY CREATED OR UPDATED UNIT");
             return "New unit created successfully with ID: " + persistedUnit.getId();
         } catch (Exception err) {

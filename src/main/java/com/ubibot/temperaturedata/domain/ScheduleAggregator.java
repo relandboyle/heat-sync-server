@@ -16,7 +16,6 @@ import java.net.URISyntaxException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 @Log4j2
 @Service
@@ -47,10 +46,10 @@ public class ScheduleAggregator {
         }
 
         // get the current data from all sensors on the account
-        ChannelListFromCloud channelList = scheduleIntegrator.getChannelDataFromCloud(requestUrl);
+        var channelList = scheduleIntegrator.getChannelDataFromCloud(requestUrl);
 
         // map the response data to a list of simplified objects
-        List<SensorData> sensorDataList = new ArrayList<>();
+        var sensorDataList = new ArrayList<SensorData>();
         try {
             sensorDataList = channelList != null ? mapChannelDataToSensorData(channelList) : null;
             assert sensorDataList != null;
@@ -59,15 +58,15 @@ public class ScheduleAggregator {
         }
 
         // get the outside air temperature for each entry
-        List<SensorData> sensorDataListWithOutsideAirTemps = weatherServiceAggregator.setOutsideAirTemperature(sensorDataList);
+        var sensorDataListWithOutsideAirTemps = weatherServiceAggregator.setOutsideAirTemperature(sensorDataList);
         // call a method to persist the prepared data to the database
         scheduleIntegrator.persistSensorData(sensorDataListWithOutsideAirTemps);
     }
 
     // takes sensor 'latest values' from the cloud and formats as SensorData objects
-    public List<SensorData> mapChannelDataToSensorData(ChannelListFromCloud response) throws JsonProcessingException {
+    public ArrayList<SensorData> mapChannelDataToSensorData(ChannelListFromCloud response) throws JsonProcessingException {
         // create a new list of SensorData to return
-        List<SensorData> responseChannels = new ArrayList<>();
+        var responseChannels = new ArrayList<SensorData>();
 
         // populate the responseChannels list
         // iterate over the list of sensor last values
