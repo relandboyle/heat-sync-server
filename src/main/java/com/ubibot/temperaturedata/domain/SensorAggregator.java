@@ -124,12 +124,17 @@ public class SensorAggregator {
     // generate a list of doubles from serverTime entries
     private List<Long> bottomTitleSpacerGenerator(List<ClientSensorData> response) {
         var spacer = new ArrayList<Long>();
+        // positive integer from zero to very large
         int responseSize = response.size();
-        int bottomTitleSpacer = responseSize / 10;
+        // if the response size is less than 10, spacer will be 0
+        int bottomTitleSpacer = Math.max(responseSize / 10, 1);
 
+        // loop over items in the response list
         for (int i = 0; i < responseSize; i++) {
+            // get a reference to the current list item
             var entry = response.get(i);
-            if (bottomTitleSpacer > 0 && i % bottomTitleSpacer == 0) {
+            // add the server time to the spacer list every Nth entry
+            if (i % bottomTitleSpacer == 0) {
                 spacer.add(entry.getServerTime());
             }
         }
