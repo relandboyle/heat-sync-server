@@ -125,7 +125,7 @@ public class SensorAggregator {
     private List<Long> bottomTitleSpacerGenerator(List<ClientSensorData> response) {
         var spacer = new ArrayList<Long>();
         int responseSize = response.size();
-        int bottomTitleSpacer = responseSize / 10;
+        int bottomTitleSpacer = Math.max(responseSize / 10, 1);
 
         for (int i = 0; i < responseSize; i++) {
             var entry = response.get(i);
