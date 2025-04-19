@@ -125,11 +125,11 @@ public class SensorAggregator {
     private List<Long> bottomTitleSpacerGenerator(List<ClientSensorData> response) {
         var spacer = new ArrayList<Long>();
         int responseSize = response.size();
-        int bottomTitleSpacer = Math.max(responseSize / 10, 1);
+        int bottomTitleSpacer = responseSize / 10;
 
         for (int i = 0; i < responseSize; i++) {
             var entry = response.get(i);
-            if (i % bottomTitleSpacer == 0) {
+            if (bottomTitleSpacer > 0 && i % bottomTitleSpacer == 0) {
                 spacer.add(entry.getServerTime());
             }
         }
